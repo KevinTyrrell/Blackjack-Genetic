@@ -18,16 +18,24 @@
 
 package test;
 
-import bitset.Conversions;
-import blackjack.card.Face;
-import genetic.Crossover;
+import blackjack.Dealer;
+import genetic.Agent;
 
-import java.util.BitSet;
+import java.util.List;
 
 public class Tester
 {
     public static void main(String[] args)
     {
-        System.out.println(Face.set());
+        final int POPULATION = 100;
+        final int MAX_GENERATIONS = 3;
+        final int BJ_ROUNDS = 16;
+        final int BJ_SHOE_SIZE = 8;
+        final Agent[] agents = new Agent[POPULATION];
+
+
+        final Dealer dealer = new Dealer();
+
+
     }
 }

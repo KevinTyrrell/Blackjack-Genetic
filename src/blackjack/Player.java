@@ -35,8 +35,9 @@ public abstract class Player implements Consumer<Card>
     private boolean hasAce = false;
 
     /* Maximum score a player can have before busting. */
-    public static int MAXIMUM_SCORE = 21;
-    private static int ACE_ADDITIONAL_SCORE = 10;
+    public static final int MAXIMUM_SCORE = 21;
+
+    private static final int ACE_ADDITIONAL_SCORE = 10;
 
     /**
      * Determines whether or not the player should hit.

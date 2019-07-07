@@ -19,23 +19,101 @@
 package test;
 
 import blackjack.Dealer;
+import blackjack.Player;
+import blackjack.Shoe;
+import blackjack.card.Card;
 import genetic.Agent;
-
-import java.util.List;
+import genetic.Cost;
+import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.SimpleObjectProperty;
 
 public class Tester
 {
     public static void main(String[] args)
     {
+        /* Setup. */
         final int POPULATION = 100;
         final int MAX_GENERATIONS = 3;
-        final int BJ_ROUNDS = 16;
+        final int BJ_BET = 10;
+        final int BJ_ROUNDS = 32;
         final int BJ_SHOE_SIZE = 8;
+        final ObjectProperty<Card> dealersCard = new SimpleObjectProperty<>();
         final Agent[] agents = new Agent[POPULATION];
-
-
         final Dealer dealer = new Dealer();
+        final Shoe shoe = new Shoe(BJ_SHOE_SIZE);
 
+        // NOTE: Encapsulate dealer's card into the dealer class.
+        // Allow access to the dealer's card from outside.
 
+        for (int i = 0; i < POPULATION; i++)
+            agents[i] = new Agent(dealersCard);
+
+        for (int gen = 0; gen < MAX_GENERATIONS; gen++)
+        {
+            final Cost<Agent> costFunc = new Cost<>(POPULATION, (agent) ->
+            {
+                int cost = 0;
+
+                for (int round = 0; round < BJ_ROUNDS; round++)
+                {
+                    final Card dc = shoe.deal();
+                    dealersCard.setValue(dc);
+                    dealer.accept(dc);
+
+                    agent.accept(shoe.deal());
+                    agent.accept(shoe.deal());
+
+                    while (true)
+                    {
+                        if (agent.hasBusted())
+                            cost += BJ_BET;
+                        else if (agent.getMaximumScore() == Player.MAXIMUM_SCORE)
+                            cost -= BJ_BET;
+                        else
+                        {
+                            if (agent.hit())
+                            {
+                                agent.accept(shoe.deal());
+                                continue;
+                            }
+                        }
+                        break;
+                    }
+
+                    if (!agent.hasBusted())
+                    {
+                        dealer.accept(shoe.deal());
+                        while (true)
+                        {
+                            if (dealer.hasBusted())
+                                cost -= BJ_BET;
+                            else if (dealer.hit())
+                            {
+                                dealer.accept(shoe.deal());
+                                continue;
+                            }
+                            break;
+                        }
+
+                        // This is so ugly, fix.
+                        if (!dealer.hasBusted())
+                        {
+                            final int dScore = dealer.getMaximumScore();
+                            final int aScore = agent.getMaximumScore();
+                            if (dScore < aScore)
+                                cost -= BJ_BET;
+                            else if (dScore > aScore)
+                                cost += BJ_BET;
+                        }
+                    }
+
+                    agent.reset();
+                    dealer.reset();
+                }
+
+                shoe.shuffle();
+                return 0;
+            });
+        }
     }
 }

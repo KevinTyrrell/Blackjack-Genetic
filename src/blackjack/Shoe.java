@@ -26,14 +26,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Random;
-import java.util.concurrent.ThreadLocalRandom;
+
+import static blackjack.Blackjack.rand;
 
 public class Shoe
 {
     private final List<Card> shoe;
     private final int size;
-    /* Random number generator for determining the next card to be drawn. */
-    private final Random rand = ThreadLocalRandom.current();
 
     /* Indicator which acts as a wall for cards which have already been dealt. */
     private int cardsDealt = 0;

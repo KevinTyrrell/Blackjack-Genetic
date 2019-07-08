@@ -18,102 +18,54 @@
 
 package test;
 
+import blackjack.Blackjack;
 import blackjack.Dealer;
-import blackjack.Player;
-import blackjack.Shoe;
 import blackjack.card.Card;
+import blackjack.card.Face;
 import genetic.Agent;
-import genetic.Cost;
-import javafx.beans.property.ObjectProperty;
-import javafx.beans.property.SimpleObjectProperty;
+import genetic.Simulation;
+import javafx.beans.property.ReadOnlyObjectProperty;
+
+import java.util.List;
+
+import static blackjack.Blackjack.rand;
 
 public class Tester
 {
     public static void main(String[] args)
     {
-        /* Setup. */
-        final int POPULATION = 100;
-        final int MAX_GENERATIONS = 3;
-        final int BJ_BET = 10;
-        final int BJ_ROUNDS = 32;
-        final int BJ_SHOE_SIZE = 8;
-        final ObjectProperty<Card> dealersCard = new SimpleObjectProperty<>();
-        final Agent[] agents = new Agent[POPULATION];
+        System.out.println("Starting.");
+
+
+        /* Blackjack setup. */
+        final long SEED = 1242323512L;
+        rand.setSeed(SEED);
+        final int NUM_OF_DECKS = 16;
+        final int BET_AMOUNT = 10;
+        final int ROUNDS_PER_AGENT = 70;
         final Dealer dealer = new Dealer();
-        final Shoe shoe = new Shoe(BJ_SHOE_SIZE);
+        /* All player's must know what the dealer's revealed card is. */
+        final ReadOnlyObjectProperty<Card> revealedPtr = dealer.getRevealedCard();
+        final Blackjack bjack = new Blackjack(dealer, NUM_OF_DECKS);
 
-        // NOTE: Encapsulate dealer's card into the dealer class.
-        // Allow access to the dealer's card from outside.
-
-        for (int i = 0; i < POPULATION; i++)
-            agents[i] = new Agent(dealersCard);
-
-        for (int gen = 0; gen < MAX_GENERATIONS; gen++)
-        {
-            final Cost<Agent> costFunc = new Cost<>(POPULATION, (agent) ->
-            {
-                int cost = 0;
-
-                for (int round = 0; round < BJ_ROUNDS; round++)
+        /* Setup the upcoming simulation, initialize cost function, etc. */
+        final Simulation<Agent> sim = new Simulation<>(1000, 50,
+                () -> new Agent(revealedPtr),
+                agent ->
                 {
-                    final Card dc = shoe.deal();
-                    dealersCard.setValue(dc);
-                    dealer.accept(dc);
+                    int cost = 0;
+                    for (int i = 0; i < ROUNDS_PER_AGENT; i++)
+                        cost += bjack.playRound(agent, BET_AMOUNT);
+                    bjack.reset();
+                    return cost;
+                });
+        sim.startSimulation();
 
-                    agent.accept(shoe.deal());
-                    agent.accept(shoe.deal());
+        final List<Agent> convergence = sim.getAgents();
+        final Agent best = convergence.get(0);
 
-                    while (true)
-                    {
-                        if (agent.hasBusted())
-                            cost += BJ_BET;
-                        else if (agent.getMaximumScore() == Player.MAXIMUM_SCORE)
-                            cost -= BJ_BET;
-                        else
-                        {
-                            if (agent.hit())
-                            {
-                                agent.accept(shoe.deal());
-                                continue;
-                            }
-                        }
-                        break;
-                    }
+        best.printWeights();
 
-                    if (!agent.hasBusted())
-                    {
-                        dealer.accept(shoe.deal());
-                        while (true)
-                        {
-                            if (dealer.hasBusted())
-                                cost -= BJ_BET;
-                            else if (dealer.hit())
-                            {
-                                dealer.accept(shoe.deal());
-                                continue;
-                            }
-                            break;
-                        }
-
-                        // This is so ugly, fix.
-                        if (!dealer.hasBusted())
-                        {
-                            final int dScore = dealer.getMaximumScore();
-                            final int aScore = agent.getMaximumScore();
-                            if (dScore < aScore)
-                                cost -= BJ_BET;
-                            else if (dScore > aScore)
-                                cost += BJ_BET;
-                        }
-                    }
-
-                    agent.reset();
-                    dealer.reset();
-                }
-
-                shoe.shuffle();
-                return 0;
-            });
-        }
+        System.out.println("Done.");
     }
 }

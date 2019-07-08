@@ -55,4 +55,12 @@ public class Card
     {
         return suit;
     }
+
+    /**
+     * @return String representation of the card.
+     */
+    @Override public String toString()
+    {
+        return String.format("%s of %s", face.toString(), suit.toString());
+    }
 }

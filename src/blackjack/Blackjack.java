@@ -19,11 +19,17 @@
 package blackjack;
 
 import java.util.Objects;
+import java.util.Random;
 
 public class Blackjack
 {
     private final Dealer dealer;
     private final Shoe shoe;
+
+    /**
+     * Global random number generator.
+     */
+    public static final Random rand = new Random();
 
     public Blackjack(final Dealer dealer, final int shoeSize)
     {
@@ -65,12 +71,7 @@ public class Blackjack
         /* Perform the dealer's turn. */
         if (dealer.getMaximumScore() != Player.MAXIMUM_SCORE && !playerTurn(dealer))
             return -1;
-
-        final int pScore = player.getMaximumScore();
-        final int dScore = dealer.getMaximumScore();
-        if (pScore > dScore) return -1;
-        if (pScore < dScore) return 1;
-        return 0;
+        return Integer.compare(dealer.getMaximumScore(), player.getMaximumScore());
     }
 
     /* Performs a specified player's turn.
@@ -90,5 +91,13 @@ public class Blackjack
             }
             else return true;
         }
+    }
+
+    /**
+     * Resets the Blackjack table.
+     */
+    public void reset()
+    {
+        shoe.shuffle();
     }
 }

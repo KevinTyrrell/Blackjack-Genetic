@@ -25,16 +25,22 @@ public class Blackjack
 {
     private final Dealer dealer;
     private final Shoe shoe;
+    private final int roundsPerShuffle;
+    
+    private int roundsPlayed = 0;
 
     /**
      * Global random number generator.
      */
     public static final Random rand = new Random();
 
-    public Blackjack(final Dealer dealer, final int shoeSize)
+    public Blackjack(final Dealer dealer, final int shoeSize, final int roundsPerShuffle)
     {
         this.dealer = Objects.requireNonNull(dealer);
-        if (shoeSize <= 0) throw new IllegalArgumentException("Shoe size must be positive and non-zero");
+        if (shoeSize <= 0) throw new IllegalArgumentException("Shoe size parameter must be positive and non-zero");
+        if (roundsPerShuffle <= 0)
+            throw new IllegalArgumentException("Rounds before shuffling parameter must be positive and non-zero");
+        this.roundsPerShuffle = roundsPerShuffle;
         shoe = new Shoe(shoeSize);
     }
 
@@ -52,6 +58,11 @@ public class Blackjack
     {
         if (bet <= 0) throw new IllegalArgumentException("Bet must be positive and non-zero");
         final int result = bet * playRound(Objects.requireNonNull(player));
+        if (++roundsPlayed >= roundsPerShuffle)
+        {
+            shoe.shuffle();
+            roundsPlayed = 0;
+        }
         player.reset();
         dealer.reset();
         return result;
@@ -80,7 +91,6 @@ public class Blackjack
     {
         assert player != null;
         while (true)
-        {
             if (player.hit())
             {
                 player.accept(shoe.deal());
@@ -90,7 +100,6 @@ public class Blackjack
                     return true;
             }
             else return true;
-        }
     }
 
     /**

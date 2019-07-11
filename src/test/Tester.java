@@ -20,11 +20,8 @@ package test;
 
 import blackjack.Blackjack;
 import blackjack.Dealer;
-import blackjack.card.Card;
-import blackjack.card.Face;
 import genetic.Agent;
 import genetic.Simulation;
-import javafx.beans.property.ReadOnlyObjectProperty;
 
 import java.util.List;
 
@@ -35,27 +32,20 @@ public class Tester
     public static void main(String[] args)
     {
         System.out.println("Starting.");
-
-
-        /* Blackjack setup. */
-        final long SEED = 1242323512L;
-        rand.setSeed(SEED);
-        final int NUM_OF_DECKS = 16;
-        final int BET_AMOUNT = 10;
-        final int ROUNDS_PER_AGENT = 70;
+        
+        rand.setSeed(1232323512L);
+        final int BJ_ROUNDS_PER_AGENT = 50000;
         final Dealer dealer = new Dealer();
         /* All player's must know what the dealer's revealed card is. */
-        final ReadOnlyObjectProperty<Card> revealedPtr = dealer.getRevealedCard();
-        final Blackjack bjack = new Blackjack(dealer, NUM_OF_DECKS);
+        final Blackjack bjack = new Blackjack(dealer, 8, 32);
 
         /* Setup the upcoming simulation, initialize cost function, etc. */
-        final Simulation<Agent> sim = new Simulation<>(1000, 50,
-                () -> new Agent(revealedPtr),
+        final Simulation<Agent> sim = new Simulation<>(1000, 10, Agent::new,
                 agent ->
                 {
                     int cost = 0;
-                    for (int i = 0; i < ROUNDS_PER_AGENT; i++)
-                        cost += bjack.playRound(agent, BET_AMOUNT);
+                    for (int i = 0; i < BJ_ROUNDS_PER_AGENT; i++)
+                        cost += bjack.playRound(agent, 1);
                     bjack.reset();
                     return cost;
                 });

@@ -30,7 +30,6 @@ import java.util.function.Consumer;
 public abstract class Player implements Consumer<Card>
 {
     private final List<Card> field = new ArrayList<>();
-    private final int identifier;
 
     private int score = 0;
     private boolean hasAce = false;
@@ -40,8 +39,6 @@ public abstract class Player implements Consumer<Card>
 
     private static final int ACE_ADDITIONAL_SCORE = 10;
 
-    private static int nextPlayer = 0;
-
     /**
      * Determines whether or not the player should hit.
      * A player may hit if their score is less than 21.
@@ -50,11 +47,6 @@ public abstract class Player implements Consumer<Card>
      * @return true if the player should hit.
      */
     public abstract boolean hit();
-
-    public Player()
-    {
-        identifier = nextPlayer++;
-    }
 
     /**
      * Accepts a dealt card, incrementing the score.
@@ -136,7 +128,6 @@ public abstract class Player implements Consumer<Card>
      */
     @Override public String toString()
     {
-        return String.format("Player{#%d,score=%d,maxScore=%d,field=%s}",
-                identifier, score, getMaximumScore(), field.toString());
+        return String.format("Player{score=%d,maxScore=%d,field=%s}", score, getMaximumScore(), field.toString());
     }
 }

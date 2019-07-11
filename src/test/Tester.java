@@ -20,7 +20,7 @@ package test;
 
 import blackjack.Blackjack;
 import blackjack.Dealer;
-import genetic.Agent;
+import genetic.ConcreteAgent;
 import genetic.Simulation;
 
 import java.util.List;
@@ -41,7 +41,7 @@ public class Tester
         final Blackjack bjack = new Blackjack(dealer, 8, 32);
 
         /* Setup the upcoming simulation, initialize cost function, etc. */
-        final Simulation<Agent> sim = new Simulation<>(10000, 100, Agent::new,
+        final Simulation<ConcreteAgent> sim = new Simulation<>(10000, 100, ConcreteAgent::new,
                 agent ->
                 {
                     int cost = 0;
@@ -55,8 +55,8 @@ public class Tester
                         gen, iss.getAverage() / BJ_ROUNDS_PER_AGENT, (double)iss.getMin() / BJ_ROUNDS_PER_AGENT, 
                         (double)iss.getMax() / BJ_ROUNDS_PER_AGENT));
 
-        final List<Agent> convergence = sim.getAgents();
-        final Agent best = convergence.get(0);
+        final List<ConcreteAgent> convergence = sim.getAgents();
+        final ConcreteAgent best = convergence.get(0);
 
         best.printWeights();
 

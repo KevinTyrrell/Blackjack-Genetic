@@ -35,12 +35,12 @@ public class Tester
     {
         System.out.println("Starting.");
         
-        final Random r = new Random(50);
+        final Random r = new Random(534240);
 
-        final int a = 211;
+        final int a = 51232;
         final int b = 202;
-        Crossover.uniform(a, b, 0.5f, r);
-        
+        final int c = Crossover.uniform(a, b, 0.5f, r);
+        System.out.println(c);
         System.out.println("Done.");
         if (System.currentTimeMillis() > 0) return;
         

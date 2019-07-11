@@ -34,22 +34,26 @@ public class Tester
         System.out.println("Starting.");
         
         rand.setSeed(1232323512L);
-        final int BJ_ROUNDS_PER_AGENT = 50000;
+        final int BJ_ROUNDS_PER_AGENT = 5000;
+        final int BJ_BET = 1;
         final Dealer dealer = new Dealer();
         /* All player's must know what the dealer's revealed card is. */
         final Blackjack bjack = new Blackjack(dealer, 8, 32);
 
         /* Setup the upcoming simulation, initialize cost function, etc. */
-        final Simulation<Agent> sim = new Simulation<>(1000, 10, Agent::new,
+        final Simulation<Agent> sim = new Simulation<>(10000, 100, Agent::new,
                 agent ->
                 {
                     int cost = 0;
                     for (int i = 0; i < BJ_ROUNDS_PER_AGENT; i++)
-                        cost += bjack.playRound(agent, 1);
+                        cost += bjack.playRound(agent, BJ_BET);
                     bjack.reset();
                     return cost;
                 });
-        sim.startSimulation();
+        sim.startSimulation((iss, gen) -> 
+                System.out.format("Generation #%-4d   Average: %-10.3f   Best: %-10.3f   Worst: %-10.3f\n", 
+                        gen, iss.getAverage() / BJ_ROUNDS_PER_AGENT, (double)iss.getMin() / BJ_ROUNDS_PER_AGENT, 
+                        (double)iss.getMax() / BJ_ROUNDS_PER_AGENT));
 
         final List<Agent> convergence = sim.getAgents();
         final Agent best = convergence.get(0);

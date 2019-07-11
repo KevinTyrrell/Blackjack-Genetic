@@ -21,9 +21,11 @@ package test;
 import blackjack.Blackjack;
 import blackjack.Dealer;
 import genetic.ConcreteAgent;
+import genetic.Crossover;
 import genetic.Simulation;
 
 import java.util.List;
+import java.util.Random;
 
 import static blackjack.Blackjack.rand;
 
@@ -32,6 +34,15 @@ public class Tester
     public static void main(String[] args)
     {
         System.out.println("Starting.");
+        
+        final Random r = new Random(50);
+
+        final int a = 211;
+        final int b = 202;
+        Crossover.uniform(a, b, 0.5f, r);
+        
+        System.out.println("Done.");
+        if (System.currentTimeMillis() > 0) return;
         
         rand.setSeed(1232323512L);
         final int BJ_ROUNDS_PER_AGENT = 5000;

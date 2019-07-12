@@ -19,29 +19,34 @@
 package blackjack;
 
 import java.util.Objects;
-import java.util.Random;
 
+/**
+ * Defines a Blackjack game, where a single player may play a dealer.
+ *
+ * @since 1.0
+ */
 public class Blackjack
 {
-    private final Dealer dealer;
+    private final Dealer dealer = new Dealer();
     private final Shoe shoe;
     private final int roundsPerShuffle;
     
     private int roundsPlayed = 0;
 
     /**
-     * Global random number generator.
+     * Constructs a new Blackjack game.
+     * 
+     * @param shoeSize Number of decks to be used in the shoe.
+     * @param roundsPerShuffle Amount of rounds before the shoe is shuffled.
+     * @param seed Random sequence seed to be used.
      */
-    public static final Random rand = new Random();
-
-    public Blackjack(final Dealer dealer, final int shoeSize, final int roundsPerShuffle)
+    public Blackjack(final int shoeSize, final int roundsPerShuffle, final long seed)
     {
-        this.dealer = Objects.requireNonNull(dealer);
         if (shoeSize <= 0) throw new IllegalArgumentException("Shoe size parameter must be positive and non-zero");
         if (roundsPerShuffle <= 0)
-            throw new IllegalArgumentException("Rounds before shuffling parameter must be positive and non-zero");
+            throw new IllegalArgumentException("Rounds per shuffle parameter must be positive and non-zero");
         this.roundsPerShuffle = roundsPerShuffle;
-        shoe = new Shoe(shoeSize);
+        shoe = new Shoe(shoeSize, seed);
     }
 
     /**
@@ -56,7 +61,7 @@ public class Blackjack
      */
     public int playRound(final Player player, final int bet)
     {
-        if (bet <= 0) throw new IllegalArgumentException("Bet must be positive and non-zero");
+        if (bet <= 0) throw new IllegalArgumentException("Bet parameter must be positive and non-zero");
         final int result = bet * playRound(Objects.requireNonNull(player));
         if (++roundsPlayed >= roundsPerShuffle)
         {

@@ -27,23 +27,30 @@ import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Random;
 
-import static blackjack.Blackjack.rand;
-
+/**
+ * Defines a shoe at a Blackjack table.
+ * A shoe is a deck made up of multiple decks.
+ *
+ * @since 1.0
+ */
 public class Shoe
 {
     private final List<Card> shoe;
     private final int size;
+    private final Random generator;
 
     /* Indicator which acts as a wall for cards which have already been dealt. */
     private int cardsDealt = 0;
 
     /**
      * @param decks Number of decks to be included into the shoe.
+     * @param seed Seed to be used for the shoe.
      */
-    public Shoe(final int decks)
+    public Shoe(final int decks, final long seed)
     {
         if (decks < 1)
             throw new IllegalArgumentException("Number of decks in the shoe must be possible and non-zero");
+        generator = new Random(seed);
         size = decks * Card.CARDS_IN_DECK;
         shoe = new ArrayList<>(size);
         for (final Suit suit : Suit.set())
@@ -68,7 +75,7 @@ public class Shoe
         if (cardsDealt >= size)
             throw new NoSuchElementException("Shoe is empty");
         /* Randomly select a card from the unused partition of the shoe. */
-        final int dealtIndex = cardsDealt + rand.nextInt(size - cardsDealt);
+        final int dealtIndex = cardsDealt + generator.nextInt(size - cardsDealt);
         final Card dealt = shoe.get(dealtIndex);
         /* Swap the card we chose with a different un-chosen card. */
         shoe.set(dealtIndex, shoe.get(cardsDealt));

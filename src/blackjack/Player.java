@@ -27,6 +27,12 @@ import java.util.List;
 import java.util.Objects;
 import java.util.function.Consumer;
 
+/**
+ * Defines a Blackjack player, who can be any
+ * entity at the table, including the dealer.
+ *
+ * @since 1.0
+ */
 public abstract class Player implements Consumer<Card>
 {
     private final List<Card> field = new ArrayList<>();

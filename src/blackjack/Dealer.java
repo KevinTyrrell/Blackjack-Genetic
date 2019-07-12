@@ -18,18 +18,15 @@
 
 package blackjack;
 
-import blackjack.card.Card;
-import javafx.beans.property.ReadOnlyObjectProperty;
-import javafx.beans.property.ReadOnlyObjectWrapper;
-
+/**
+ * Defines a dealer at a Blackjack table.
+ * A dealer must follow specific rules when it comes to score.
+ * 
+ * @since 1.0
+ */
 public class Dealer extends Player
 {
     private static int MINIMUM_DEALER_SCORE = 17;
-
-    /**
-     * Reference to the card which the dealer has revealed.
-     */
-    private final ReadOnlyObjectWrapper<Card> revealedCard = new ReadOnlyObjectWrapper<>();
 
     /**
      * Determines whether or not the player should hit.
@@ -42,37 +39,7 @@ public class Dealer extends Player
     {
         return getMaximumScore() < MINIMUM_DEALER_SCORE;
     }
-
-    /**
-     * Accepts a dealt card, incrementing the score.
-     * The dealer will also reveal the first card.
-     *
-     * @param card Card which is dealt.
-     */
-    @Override public void accept(final Card card)
-    {
-        if (getScore() <= 0)
-            revealedCard.set(card);
-        super.accept(card);
-    }
-
-    /**
-     * Resets the dealers's field.
-     */
-    @Override public void reset()
-    {
-        revealedCard.set(null);
-        super.reset();
-    }
-
-    /**
-     * @return Reference to the dealer's revealed card.
-     */
-    public ReadOnlyObjectProperty<Card> getRevealedCard()
-    {
-        return revealedCard.getReadOnlyProperty();
-    }
-
+    
     /**
      * @return String representation of the dealer.
      */

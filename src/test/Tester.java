@@ -39,11 +39,11 @@ public class Tester
     {
         System.out.println("Starting.");
         
-        final Random generator = new Random(534240L);
-        final float MUTATION_RATE = 0.25f;
-        final int POPULATION_SIZE = 1000;
-        final int MAX_GENERATIONS = 10;
-        final boolean MULTI_THREADED = true;
+        final Random generator = new Random(42512324L);
+        final float MUTATION_RATE = 0.35f;
+        final int POPULATION_SIZE = 10000;
+        final int MAX_GENERATIONS = 50;
+        final boolean MULTI_THREADED = true;//16.48 5
         final int BJ_ROUNDS_PER_AGENT = 10000;
         final int BJ_SHOE_SIZE = 8;
         final int BJ_ROUNDS_PER_SHUFFLE = 16;
@@ -93,6 +93,8 @@ public class Tester
             agents[i] = ca;
         }
         sim.run(agents, MAX_GENERATIONS, generator, MULTI_THREADED);
+        
+        agents[0].printWeights();
 
         System.out.println("Done.");
     }

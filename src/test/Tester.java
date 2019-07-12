@@ -84,7 +84,14 @@ public class Tester
             }
         };
         
+        /* Initialize a population of random agents. */
         final ConcreteAgent[] agents = new ConcreteAgent[POPULATION_SIZE];
+        for (int i = 0; i < POPULATION_SIZE; i++)
+        {
+            final ConcreteAgent ca = new ConcreteAgent(generator.nextLong());
+            ca.randomizeWeights(generator);
+            agents[i] = ca;
+        }
         sim.run(agents, MAX_GENERATIONS, generator, MULTI_THREADED);
 
         System.out.println("Done.");

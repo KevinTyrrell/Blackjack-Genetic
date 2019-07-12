@@ -22,6 +22,12 @@ import java.util.Collections;
 import java.util.EnumSet;
 import java.util.Set;
 
+/**
+ * Defines a Poker card suit, from Spades to Diamonds.
+ * Suits have no impact in traditional Blackjack.
+ *
+ * @since 1.0
+ */
 public enum Suit
 {
     SPADES, HEARTS, CLUBS, DIAMONDS;

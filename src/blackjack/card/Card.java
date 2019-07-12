@@ -20,6 +20,12 @@ package blackjack.card;
 
 import java.util.Objects;
 
+/**
+ * Defines a Poker card, feature a face and a suit.
+ * The suit has no impact in traditional Blackjack.
+ *
+ * @since 1.0
+ */
 public class Card
 {
     private final Face face;

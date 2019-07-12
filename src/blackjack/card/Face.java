@@ -22,6 +22,13 @@ import java.util.Collections;
 import java.util.EnumSet;
 import java.util.Set;
 
+/**
+ * Defines a Poker card face, from Ace to King.
+ * Ace has a special point rule in Blackjack.
+ * Ten, Jack, Queen, and King share the same point value.
+ *
+ * @since 1.0
+ */
 public enum Face
 {
     ACE(1),

@@ -19,57 +19,73 @@
 package test;
 
 import blackjack.Blackjack;
-import blackjack.Dealer;
+import genetic.Agent;
 import genetic.ConcreteAgent;
-import genetic.Crossover;
+import genetic.Mutations;
 import genetic.Simulation;
 
-import java.util.List;
+import java.util.IntSummaryStatistics;
 import java.util.Random;
+import java.util.function.ToIntFunction;
 
-import static blackjack.Blackjack.rand;
-
+/**
+ * Defines an entry-point into the program.
+ *
+ * @since 1.0
+ */
 public class Tester
 {
     public static void main(String[] args)
     {
         System.out.println("Starting.");
         
-        final Random r = new Random(534240);
-
-        final int a = 51232;
-        final int b = 202;
-        final int c = Crossover.uniform(a, b, 0.5f, r);
-        System.out.println(c);
-        System.out.println("Done.");
-        if (System.currentTimeMillis() > 0) return;
+        final Random generator = new Random(534240L);
+        final float MUTATION_RATE = 0.25f;
+        final int POPULATION_SIZE = 1000;
+        final int MAX_GENERATIONS = 10;
+        final boolean MULTI_THREADED = true;
+        final int BJ_ROUNDS_PER_AGENT = 10000;
+        final int BJ_SHOE_SIZE = 8;
+        final int BJ_ROUNDS_PER_SHUFFLE = 16;
         
-        rand.setSeed(1232323512L);
-        final int BJ_ROUNDS_PER_AGENT = 5000;
-        final int BJ_BET = 1;
-        final Dealer dealer = new Dealer();
-        /* All player's must know what the dealer's revealed card is. */
-        final Blackjack bjack = new Blackjack(dealer, 8, 32);
+        /* Controls the entire lifecycle of agents. */
+        final Simulation<ConcreteAgent> sim = new Simulation<>()
+        {
+            @Override public ConcreteAgent initAgent()
+            {
+                return new ConcreteAgent(generator.nextLong());
+            }
 
-        /* Setup the upcoming simulation, initialize cost function, etc. */
-        final Simulation<ConcreteAgent> sim = new Simulation<>(10000, 100, ConcreteAgent::new,
-                agent ->
+            @Override public void mutateAgent(final Agent agent)
+            {
+                Mutations.flip(agent, MUTATION_RATE, generator);
+            }
+
+            /* Creates a cost function to be used when assessing agents. */
+            @Override public ToIntFunction<ConcreteAgent> initCostFunc()
+            {
+                final Blackjack bJack = new Blackjack(BJ_SHOE_SIZE, BJ_ROUNDS_PER_SHUFFLE, generator.nextLong());
+                return agent ->
                 {
                     int cost = 0;
                     for (int i = 0; i < BJ_ROUNDS_PER_AGENT; i++)
-                        cost += bjack.playRound(agent, BJ_BET);
-                    bjack.reset();
+                        cost += bJack.playRound(agent, 1);
+                    bJack.reset();
                     return cost;
-                });
-        sim.startSimulation((iss, gen) -> 
+                };
+            }
+
+            /* Indicates how well each generation is performing. */
+            @Override public void genCostStatsCallback(final IntSummaryStatistics iss, final int generation)
+            { 
                 System.out.format("Generation #%-4d   Average: %-10.3f   Best: %-10.3f   Worst: %-10.3f\n", 
-                        gen, iss.getAverage() / BJ_ROUNDS_PER_AGENT, (double)iss.getMin() / BJ_ROUNDS_PER_AGENT, 
-                        (double)iss.getMax() / BJ_ROUNDS_PER_AGENT));
-
-        final List<ConcreteAgent> convergence = sim.getAgents();
-        final ConcreteAgent best = convergence.get(0);
-
-        best.printWeights();
+                        generation, iss.getAverage() / BJ_ROUNDS_PER_AGENT, (double)iss.getMin() / BJ_ROUNDS_PER_AGENT, 
+                        (double)iss.getMax() / BJ_ROUNDS_PER_AGENT);
+            }
+        };
+        
+        final ConcreteAgent[] agents = new ConcreteAgent[POPULATION_SIZE];
+        sim.run(agents, MAX_GENERATIONS, generator, MULTI_THREADED);
 
         System.out.println("Done.");
     }

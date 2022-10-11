@@ -24,6 +24,10 @@ import genetic.ConcreteAgent;
 import genetic.Mutations;
 import genetic.Simulation;
 
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.ObjectInputStream;
 import java.util.IntSummaryStatistics;
 import java.util.Random;
 import java.util.function.ToIntFunction;
@@ -39,15 +43,28 @@ public class Tester
     {
         System.out.println("Starting.");
         
-        final Random generator = new Random(42512324L);
-        final float MUTATION_RATE = 0.35f;
-        final int POPULATION_SIZE = 10000;
-        final int MAX_GENERATIONS = 50;
-        final boolean MULTI_THREADED = true;//16.48 5
-        final int BJ_ROUNDS_PER_AGENT = 10000;
+        final Random generator = new Random(423298675324L);
+        final float MUTATION_RATE = 0.0f;
+        final int POPULATION_SIZE = 2000;
+        final int MAX_GENERATIONS = 100;
+        final boolean MULTI_THREADED = true;
+        final int BJ_ROUNDS_PER_AGENT = 25000;
         final int BJ_SHOE_SIZE = 8;
         final int BJ_ROUNDS_PER_SHUFFLE = 16;
-        
+
+        try (final InputStream is = new FileInputStream("myObj"))
+        {
+            final ObjectInputStream ois = new ObjectInputStream(is);
+            final ConcreteAgent ca = (ConcreteAgent)ois.readObject();
+            final Blackjack bj = new Blackjack(8, 16, generator.nextLong());
+            for (int i = 0; i < 100; i++)
+                bj.playRound(ca, 1);
+        }
+        catch (IOException | ClassNotFoundException e)
+        {
+            e.printStackTrace();
+        }
+
         /* Controls the entire lifecycle of agents. */
         final Simulation<ConcreteAgent> sim = new Simulation<>()
         {
@@ -94,7 +111,38 @@ public class Tester
         }
         sim.run(agents, MAX_GENERATIONS, generator, MULTI_THREADED);
         
-        agents[0].printWeights();
+        final IntSummaryStatistics issWeights[] = new IntSummaryStatistics[19 * 2];
+        for (int i = 0; i < issWeights.length; i++) issWeights[i] = new IntSummaryStatistics();
+        for (int i = 0; i < POPULATION_SIZE; i++)
+        {
+            final int[] weights = agents[i].getWeights();
+            for (int j = 0; j < weights.length; j++)
+                issWeights[j].accept(weights[j]);
+        }
+
+        System.out.print("Score");
+        for (int i = 0; i < 19; i++)
+            System.out.printf("  %5d ", i + 2);
+        System.out.print("\nNoAce");
+        for (int i = 0; i < 19; i++)
+            System.out.printf("  %5s%%", String.format("%3.2f", issWeights[i].getAverage() * 100 / Integer.MAX_VALUE));
+        System.out.println();
+
+        System.out.print("\n  Ace");
+        for (int i = 19; i < issWeights.length; i++)
+            System.out.printf("  %5s%%", String.format("%3.2f", issWeights[i].getAverage() * 100 / Integer.MAX_VALUE));
+        System.out.println();
+        
+//        final ConcreteAgent best = agents[0];
+//        try (final FileOutputStream fos = new FileOutputStream("myObj"))
+//        {
+//            final ObjectOutputStream oos = new ObjectOutputStream(fos);
+//            oos.writeObject(best);
+//        }
+//        catch (final IOException e)
+//        {
+//            e.printStackTrace();
+//        }
 
         System.out.println("Done.");
     }

@@ -2,7 +2,7 @@
 
 _Attempts to learn how to play Blackjack genetically._
 
-Each attempt at finding the right balance of weights to learn how to perform a particular is called an **Agent**. A weight is a percentage (0% to 100%) of how likely the Agent is to perform an action in a given situation. For Blackjack, that action is whether or not to *Hit* or *Stand* and the situation is the Agent's score (from 2 to 20). Even if an Agent's weight towards a particular action in a specific context is 95%, he would still have a random 5% chance of deciding to perform the opposite action.
+Each attempt at finding the right balance of weights in order to learn how to perform a particular task is called an **Agent**. A weight is a percentage (0% to 100%) of how likely the Agent is to perform an action in a given situation. For Blackjack, that action is whether or not to *Hit* or *Stand* and the situation is the Agent's score (from 2 to 20). Even if an Agent's weight towards a particular action in a specific context is 95%, he would still have a random 5% chance of deciding to perform the opposite action.
 
 In order to converge on a strategy, many Agents are created with completely random weights towards all possible situations. Each of these Agents are then tested by a **Cost Function**, who evaluates their 'fitness'. In this case, their cost is how much money they lose against the dealer after playing `n` rounds of Blackjack with him. The AI's goal is to get its cost as low as possible, but it is never explicitly told that. Half of the Agent population who had the highest costs are discarded. The remaining Agent population are paired up, reproduce, and **crossover** their respective weights to their children. The children take the places of the discarded Agents. The process begins again and repeats until convergence is achieved.
         
@@ -73,4 +73,4 @@ The left column shows what possible scores an Agent might have at any given time
 
 ![Convergence Patten](./res/convergence.png)
 
-Reluctance to *Hit* at very low scores is strange. Stranger still is the interest the Agent has in *Hitting* at Score 20 with an Ace.
+Reluctance to *Hit* at very low scores is strange. However, this may be due to the fact that having an extremely low score, such as `2` is rare. Stranger still is the interest the Agent has in *Hitting* at Score 20 with an Ace.

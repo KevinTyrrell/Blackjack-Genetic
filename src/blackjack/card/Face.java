@@ -23,11 +23,10 @@ import java.util.EnumSet;
 import java.util.Set;
 
 /**
- * Defines a Poker card face, from Ace to King.
- * Ace has a special point rule in Blackjack.
- * Ten, Jack, Queen, and King share the same point value.
+ * Defines a Poker card face, from Ace to King
  *
- * @since 1.0
+ * Ten, Jack, Queen, and King share the same point value.
+ * Ace's point value increases by 10 if the hand's value is less than 12.
  */
 public enum Face
 {
@@ -51,7 +50,7 @@ public enum Face
     private static final Set<Face> set = Collections.unmodifiableSet(EnumSet.allOf(Face.class));
 
     /**
-     * @return Read-only set of Face enum values.
+     * @return Read-only set of Face enum values
      */
     public static Set<Face> set()
     {
@@ -63,14 +62,14 @@ public enum Face
         assert value > 0;
         this.value = value;
         final String n = name();
+        assert n.length() > 1;
         name = n.charAt(0) + n.substring(1).toLowerCase();
     }
 
     /**
-     * Retrieve the amount of points the card face is worth.
-     * Note: Aces return a value of 1, but can be treated as 11.
+     * Retrieve the amount of points the card face is worth
      *
-     * @return Value of the card face.
+     * @return Value of the card face
      */
     public int getValue()
     {
@@ -78,7 +77,7 @@ public enum Face
     }
 
     /**
-     * @return Name of the card face.
+     * @return Name of the card face
      */
     public String getName()
     {
@@ -86,9 +85,7 @@ public enum Face
     }
 
     /**
-     * This is equivalent to calling Face.getName()
-     *
-     * @return String representation of the card face.
+     * @return String representation of the card face
      */
     @Override public String toString()
     {

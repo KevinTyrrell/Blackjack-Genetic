@@ -21,9 +21,11 @@ package blackjack;
 import java.util.Objects;
 
 /**
- * Defines a Blackjack game, where a single player may play a dealer.
+ * Defines a game of Blackjack
  *
- * @since 1.0
+ *
+ * TODO: Allow for multiple players to face the dealer
+ * TODO: Allow extension in which you could view the play-by-play of the game
  */
 public class Blackjack
 {

@@ -19,21 +19,29 @@
 package blackjack;
 
 /**
- * Defines a dealer at a Blackjack table.
- * A dealer must follow specific rules when it comes to score.
- * 
- * @since 1.0
+ * Defines a dealer at a Blackjack table
+ *
+ * A dealer must follow specific rules when it comes to score
  */
 public class Dealer extends Player
 {
+    /* A dealer must hit if their score is less than 17 */
     private static int MINIMUM_DEALER_SCORE = 17;
 
+    private final String name;
+
+    public Dealer()
+    {
+        /* Cache the dealer's name */
+        name = super.toString().replace("Player", "Dealer");
+    }
+
     /**
-     * Determines whether or not the player should hit.
-     * A player may hit if their score is less than 21.
-     * A dealer must hit if his maximum score is less than 17.
+     * Determines whether or not the dealer should hit
      *
-     * @return true if the player should hit.
+     * A dealer must hit if their score is less than 17
+     *
+     * @return true if the player should hit
      */
     @Override public boolean hit()
     {
@@ -41,10 +49,10 @@ public class Dealer extends Player
     }
     
     /**
-     * @return String representation of the dealer.
+     * @return String representation of the dealer
      */
     @Override public String toString()
     {
-        return super.toString().replace("Player", "Dealer");
+        return name;
     }
 }

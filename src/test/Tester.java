@@ -35,14 +35,17 @@ import java.util.function.ToIntFunction;
 /**
  * Defines an entry-point into the program.
  *
- * @since 1.0
  */
 public class Tester
 {
     public static void main(String[] args)
     {
         System.out.println("Starting.");
-        
+
+        System.out.println("\uD83C\uDCB2");
+
+        if (System.currentTimeMillis() > 0) return;
+
         final Random generator = new Random(423298675324L);
         final float MUTATION_RATE = 0.0f;
         final int POPULATION_SIZE = 2000;

@@ -22,36 +22,43 @@ import java.util.Collections;
 import java.util.EnumSet;
 import java.util.Set;
 
+import static java.util.Objects.requireNonNull;
+
+
 /**
- * Defines a Poker card suit, from Spades to Diamonds.
- * Suits have no impact in traditional Blackjack.
+ * Defines a Poker card suit
  *
- * @since 1.0
+ * Suits and their ranks have no relevance in traditional Blackjack
  */
 public enum Suit
 {
-    SPADES, HEARTS, CLUBS, DIAMONDS;
+    SPADES("♠"),
+    HEARTS("♥"),
+    CLUBS("♦"),
+    DIAMONDS("♣");
 
     private final String name;
+    private final String symbol;
 
     private static final Set<Suit> set = Collections.unmodifiableSet(EnumSet.allOf(Suit.class));
 
     /**
-     * @return Read-only set of Suit enum values.
+     * @return Read-only set of Suit enum values
      */
     public static Set<Suit> set()
     {
         return set;
     }
 
-    Suit()
+    Suit(final String symbol)
     {
         final String n = name();
         name = n.charAt(0) + n.substring(1).toLowerCase();
+        this.symbol = requireNonNull(symbol);
     }
 
     /**
-     * @return Name of the card face.
+     * @return Name of the card suit
      */
     public String getName()
     {
@@ -59,9 +66,15 @@ public enum Suit
     }
 
     /**
-     * This is equivalent to calling Face.getName()
-     *
-     * @return String representation of the card face.
+     * @return Unicode symbol of the card suit
+     */
+    public String getSymbol()
+    {
+        return symbol;
+    }
+
+    /**
+     * @return String representation of the card suit
      */
     @Override public String toString()
     {

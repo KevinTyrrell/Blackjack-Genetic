@@ -22,16 +22,17 @@ import blackjack.card.Card;
 import blackjack.card.Face;
 import blackjack.card.Suit;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Random;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
 
 /**
- * Defines a shoe at a Blackjack table.
- * A shoe is a deck made up of multiple decks.
+ * Defines a shoe at a Blackjack table
  *
- * @since 1.0
+ * A shoe is a larger deck made up of multiple decks
  */
 public class Shoe
 {
@@ -39,53 +40,53 @@ public class Shoe
     private final int size;
     private final Random generator;
 
-    /* Indicator which acts as a wall for cards which have already been dealt. */
+    /* Indicates which cards of the shoe have already been dealt */
     private int cardsDealt = 0;
 
+    /* Standard deck size, one card of each face and suit */
+    private static final int DEFAULT_DECK_SIZE = Face.values().length * Suit.values().length;
+
     /**
-     * @param decks Number of decks to be included into the shoe.
-     * @param seed Seed to be used for the shoe.
+     * @param decks Number of decks to be included into the shoe
+     * @param seed Seed to be used for the shoe
      */
     public Shoe(final int decks, final long seed)
     {
         if (decks < 1)
             throw new IllegalArgumentException("Number of decks in the shoe must be possible and non-zero");
         generator = new Random(seed);
-        size = decks * Card.CARDS_IN_DECK;
-        shoe = new ArrayList<>(size);
-        for (final Suit suit : Suit.set())
-            for (final Face face : Face.set())
-            {
-                final Card card = new Card(face, suit);
-                for (int i = 0; i < decks; i++)
-                    shoe.add(card);
-            }
+        size = decks * DEFAULT_DECK_SIZE;
+        shoe = Suit.set().stream()
+                .flatMap(s -> Face.set().stream()
+                        .flatMap(f -> Stream.generate(() -> new Card(f, s)).limit(decks)))
+                .collect(Collectors.toList());
     }
 
     /**
-     * Deals a random card from the deck.
+     * Deals a random card from the deck
      *
-     * Performs fischer-yates-like selection as each individual card is dealt.
-     * An exception will be thrown if the shoe is empty.
+     * Performs a fischer-yates shuffle step on every card dealt.
+     * After all cards are dealt, the shoe is effectively shuffled as-is.
      *
-     * @return Card which was dealt.
+     * @return Card which was dealt
      */
     public Card deal()
     {
         if (cardsDealt >= size)
             throw new NoSuchElementException("Shoe is empty");
-        /* Randomly select a card from the unused partition of the shoe. */
+        /* Randomly select a card from the unused partition of the shoe */
         final int dealtIndex = cardsDealt + generator.nextInt(size - cardsDealt);
         final Card dealt = shoe.get(dealtIndex);
-        /* Swap the card we chose with a different un-chosen card. */
+        /* Swap the dealt card with whatever card is at the bottom of the deck */
         shoe.set(dealtIndex, shoe.get(cardsDealt));
         shoe.set(cardsDealt++, dealt);
         return dealt;
     }
 
     /**
-     * Shuffles the shoe, allowing cards previously dealt to be dealt again.
-     * A shoe should not be shuffled if dealt cards are still in-play.
+     * Shuffles the shoe
+     *
+     * A shoe should not be shuffled if dealt cards are still in-play
      */
     public void shuffle()
     {
@@ -93,7 +94,7 @@ public class Shoe
     }
 
     /**
-     * @return Maximum number of cards contained in the shoe.
+     * @return Maximum number of cards contained in the shoe
      */
     public int size()
     {
@@ -101,7 +102,7 @@ public class Shoe
     }
 
     /**
-     * @return Number of cards which have yet to be dealt.
+     * @return Number of cards which have yet to be dealt
      */
     public int cardsLeft()
     {

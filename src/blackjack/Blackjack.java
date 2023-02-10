@@ -23,6 +23,8 @@ import java.util.Objects;
 /**
  * Defines a game of Blackjack
  *
+ * Players must attempt to score as close to, but not exceeding, 21.
+ * Score is determined by the card values in each player's hand.
  *
  * TODO: Allow for multiple players to face the dealer
  * TODO: Allow extension in which you could view the play-by-play of the game
@@ -35,30 +37,30 @@ public class Blackjack
     
     private int roundsPlayed = 0;
 
+
+
     /**
-     * Constructs a new Blackjack game.
-     * 
-     * @param shoeSize Number of decks to be used in the shoe.
-     * @param roundsPerShuffle Amount of rounds before the shoe is shuffled.
-     * @param seed Random sequence seed to be used.
+     * @param shoeSize Number of decks to be used in the shoe
+     * @param roundsPerShuffle Amount of rounds before the shoe is shuffled
+     * @param seed Random sequence seed to be used
      */
     public Blackjack(final int shoeSize, final int roundsPerShuffle, final long seed)
     {
-        if (shoeSize <= 0) throw new IllegalArgumentException("Shoe size parameter must be positive and non-zero");
+        if (shoeSize <= 0) throw new IllegalArgumentException("Shoe size must be positive and non-zero");
         if (roundsPerShuffle <= 0)
-            throw new IllegalArgumentException("Rounds per shuffle parameter must be positive and non-zero");
+            throw new IllegalArgumentException("Rounds-per-shuffle must be positive and non-zero");
         this.roundsPerShuffle = roundsPerShuffle;
         shoe = new Shoe(shoeSize, seed);
     }
 
     /**
-     * Plays through a round of Blackjack with the dealer and a specified player.
-     * A returned value less than zero indicates a win, while positive indicates a loss.
-     * After the round, the dealer and player will discard their field and scores.
-     * The shoe is NOT shuffled after this function terminates.
+     * Commences a round of Blackjack
      *
-     * @param player Player to compete against the dealer.
-     * @param bet Bet to place into the round.
+     * The round continues until all players either win, lose, or push.
+     * The shoe is NOT shuffled after a round terminates.
+     *
+     * @param player Player to compete against the dealer
+     * @param bet Bet to place into the round
      * @return -bet if the player wins, bet if the dealer wins, or 0 for a push.
      */
     public int playRound(final Player player, final int bet)

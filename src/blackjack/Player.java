@@ -28,9 +28,9 @@ import java.util.Objects;
 import java.util.function.Consumer;
 
 /**
- * Defines a Blackjack player, who can be any
- * entity at the table, including the dealer.
+ * Defines a Blackjack player
  *
+ * Any participant at the table is considered a player
  */
 public abstract class Player implements Consumer<Card>
 {
@@ -39,24 +39,25 @@ public abstract class Player implements Consumer<Card>
     private int score = 0;
     private boolean hasAce = false;
 
-    /* Maximum score a player can have before busting. */
+    /* Maximum player score - anything beyond is considered a 'bust' */
     public static final int MAXIMUM_SCORE = 21;
 
     private static final int ACE_ADDITIONAL_SCORE = 10;
 
     /**
-     * Determines whether or not the player should hit.
+     * Determines whether or not the player should hit
+     *
      * A player may hit if their score is less than 21.
      * A dealer must hit if his maximum score is less than 17.
      *
-     * @return true if the player should hit.
+     * @return true if the player should hit
      */
     public abstract boolean hit();
 
     /**
-     * Accepts a dealt card, incrementing the score.
+     * Accepts a dealt card, incrementing the score
      *
-     * @param card Card which is dealt.
+     * @param card Card which is dealt to the player
      */
     @Override public void accept(final Card card)
     {
@@ -68,7 +69,7 @@ public abstract class Player implements Consumer<Card>
     }
 
     /**
-     * @return true if the player has an ace.
+     * @return true if the player has an ace in their hand
      */
     public boolean hasAce()
     {
@@ -76,11 +77,12 @@ public abstract class Player implements Consumer<Card>
     }
 
     /**
-     * Calculates the player's maximum potential score.
-     * A player's score can differ depending on if an ace is treated as a 1 or 11.
+     * Calculates the player's maximum potential score
+     *
+     * A player's score can differ depending on if an ace is treated with a value of 1 or 11.
      * If a player's maximum score would bust, his normal score is returned.
      *
-     * @return Current score of the player, avoiding busts.
+     * @return Current score of the player, avoiding busts
      */
     public int getMaximumScore()
     {
@@ -95,7 +97,7 @@ public abstract class Player implements Consumer<Card>
     }
 
     /**
-     * @return Current player's score, treating aces as value of 1.
+     * @return Current player's score, treating aces as value of 1
      */
     public int getScore()
     {
@@ -103,7 +105,7 @@ public abstract class Player implements Consumer<Card>
     }
 
     /**
-     * @return Read-only list of cards on the player's field.
+     * @return Read-only list of cards on the player's field
      */
     public List<Card> getField()
     {
@@ -111,7 +113,7 @@ public abstract class Player implements Consumer<Card>
     }
 
     /**
-     * @return true if the player busted.
+     * @return true if the player's score exceeds the bust threshold
      */
     public boolean hasBusted()
     {
@@ -119,7 +121,7 @@ public abstract class Player implements Consumer<Card>
     }
 
     /**
-     * Resets the player's field.
+     * Resets the player's field
      */
     public void reset()
     {
@@ -129,7 +131,7 @@ public abstract class Player implements Consumer<Card>
     }
 
     /**
-     * @return String representation of the player.
+     * @return String representation of the player
      */
     @Override public String toString()
     {

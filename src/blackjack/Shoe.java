@@ -84,6 +84,14 @@ public class Shoe
     }
 
     /**
+     * @return Percentage [0.0,1.0] of how much of the shoe has been dealt out
+     */
+    public float penetration()
+    {
+        return cardsDealt / (float)size;
+    }
+
+    /**
      * Shuffles the shoe
      *
      * A shoe should not be shuffled if dealt cards are still in-play
@@ -99,13 +107,5 @@ public class Shoe
     public int size()
     {
         return size;
-    }
-
-    /**
-     * @return Number of cards which have yet to be dealt
-     */
-    public int cardsLeft()
-    {
-        return size - cardsDealt;
     }
 }

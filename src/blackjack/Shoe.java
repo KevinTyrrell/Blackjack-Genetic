@@ -84,7 +84,7 @@ public class Shoe
     }
 
     /**
-     * @return Percentage [0.0,1.0] of how much of the shoe has been dealt out
+     * @return Percentage [0.0,1.0] of how many cards of the shoe have been dealt out
      */
     public float penetration()
     {

@@ -45,7 +45,7 @@ public class Dealer extends Player
      */
     @Override public boolean hit()
     {
-        return getMaximumScore() < MINIMUM_DEALER_SCORE;
+        return getSoftScore() < MINIMUM_DEALER_SCORE;
     }
     
     /**

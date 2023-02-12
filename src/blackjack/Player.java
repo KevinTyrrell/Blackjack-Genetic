@@ -84,7 +84,7 @@ public abstract class Player implements Consumer<Card>
      *
      * @return Current score of the player, avoiding busts
      */
-    public int getMaximumScore()
+    public int getSoftScore()
     {
         if (hasAce)
         {
@@ -97,9 +97,9 @@ public abstract class Player implements Consumer<Card>
     }
 
     /**
-     * @return Current player's score, treating aces as value of 1
+     * @return Current player's score, treating aces with a value of 1
      */
-    public int getScore()
+    public int getHardScore()
     {
         return score;
     }
@@ -113,7 +113,7 @@ public abstract class Player implements Consumer<Card>
     }
 
     /**
-     * @return true if the player's score exceeds the bust threshold
+     * @return true if the player's score exceeds the 'bust' threshold
      */
     public boolean hasBusted()
     {
@@ -135,6 +135,6 @@ public abstract class Player implements Consumer<Card>
      */
     @Override public String toString()
     {
-        return String.format("Player{score=%d,maxScore=%d,field=%s}", score, getMaximumScore(), field.toString());
+        return String.format("Player{score=%d,maxScore=%d,field=%s}", score, getSoftScore(), field.toString());
     }
 }

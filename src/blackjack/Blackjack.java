@@ -18,7 +18,15 @@
 
 package blackjack;
 
-import java.util.Objects;
+import blackjack.card.Card;
+
+import java.util.*;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+
+import static java.lang.System.currentTimeMillis;
+import static java.util.Objects.requireNonNull;
+
 
 /**
  * Defines a game of Blackjack
@@ -31,91 +39,159 @@ import java.util.Objects;
  */
 public class Blackjack
 {
-    private final Dealer dealer = new Dealer();
     private final Shoe shoe;
-    private final int roundsPerShuffle;
-    
-    private int roundsPlayed = 0;
+    private final float penetration;
+    private final Player dealer = new Dealer();
+    // TODO: Subclass Blackjack specifically for 1 player, as an optimization.
+    // TODO: Subclassed class should create a fake 'Map<Player, Integer> facade.
+    private final Map<Player, Integer> players, players_ro;
 
+    /* Percentage of the deck dealt out such that a shuffle should occur */
+    private static final float DEFAULT_PENETRATION = 0.5f;
+    /* Standard shoe size for most Blackjack tables is 8 */
+    private static final int DEFAULT_SHOE_SIZE = 8;
+    /* Round result constants depending on the end state of the Blackjack round  */
+    private static final int RESULT_WIN = 1, RESULT_LOSS = -1, RESULT_PUSH = 0;
 
+    public Blackjack() { this(DEFAULT_SHOE_SIZE, currentTimeMillis(), DEFAULT_SHOE_SIZE); }
+    public Blackjack(final int shoeSize) { this(shoeSize, currentTimeMillis(), DEFAULT_PENETRATION); }
+    public Blackjack(final int shoeSize, final long seed) { this(shoeSize, seed, DEFAULT_PENETRATION); }
 
     /**
-     * @param shoeSize Number of decks to be used in the shoe
-     * @param roundsPerShuffle Amount of rounds before the shoe is shuffled
-     * @param seed Random sequence seed to be used
+     * Constructs a Blackjack table instance
+     *
+     * @param shoeSize Number of decks to be combined into a shoe
+     * @param seed Random seed sequence
+     * @param penetration Percentage [0.0,1.0] of how many cards of the shoe have
+     *                    been dealt out before a shuffle should take place.
      */
-    public Blackjack(final int shoeSize, final int roundsPerShuffle, final long seed)
+    public Blackjack(final int shoeSize, final long seed, final float penetration)
     {
         if (shoeSize <= 0) throw new IllegalArgumentException("Shoe size must be positive and non-zero");
-        if (roundsPerShuffle <= 0)
-            throw new IllegalArgumentException("Rounds-per-shuffle must be positive and non-zero");
-        this.roundsPerShuffle = roundsPerShuffle;
+        if (penetration < 0.0f || penetration > 1.0f)
+            throw new IllegalArgumentException("Penetration threshold must be within bounds [0.0, 1.0]");
         shoe = new Shoe(shoeSize, seed);
+        this.penetration = penetration;
+        // Track all players participating at the Blackjack table
+        players = new LinkedHashMap<>();
+        players_ro = Collections.unmodifiableMap(players);
     }
 
     /**
-     * Commences a round of Blackjack
+     * Deal in all players at the table, ensuring they are dealt cards each round
      *
-     * The round continues until all players either win, lose, or push.
-     * The shoe is NOT shuffled after a round terminates.
-     *
-     * @param player Player to compete against the dealer
-     * @param bet Bet to place into the round
-     * @return -bet if the player wins, bet if the dealer wins, or 0 for a push.
+     * @param players Players to deal in at the table
      */
-    public int playRound(final Player player, final int bet)
+    public void dealIn(final Player ...players)
     {
-        if (bet <= 0) throw new IllegalArgumentException("Bet parameter must be positive and non-zero");
-        final int result = bet * playRound(Objects.requireNonNull(player));
-        if (++roundsPlayed >= roundsPerShuffle)
+        Arrays.stream(players).forEach(Objects::requireNonNull);
+        this.players.putAll(Arrays.stream(requireNonNull(players))
+                .collect(Collectors.toMap(
+                        Function.identity(), v -> RESULT_PUSH)));
+    }
+
+    public void playRound()
+    {
+        if (players.isEmpty()) throw new IllegalStateException("Cannot play round without any player participants");
+        // Card deal order is always one card to each player, one to dealer, and so on.
+        // This order is imperative for subclasses which track the game event-by-event.
+        players.keySet().forEach(p -> dealTo(dealer, shoe.deal()));
+        dealTo(dealer, shoe.deal());
+        players.keySet().forEach(p -> dealTo(dealer, shoe.deal()));
+        dealTo(dealer, shoe.deal());
+
+        // Intellij does not realize looping over entire set is mandatory via 'filter'
+        @SuppressWarnings("SimplifyStreamApiCallChains")
+        final boolean fullRound = players.keySet().stream()
+                .filter(this::playerTurn)
+                .findAny().isPresent();
+
+        if (fullRound)
         {
-            shoe.shuffle();
-            roundsPlayed = 0;
+            final boolean dBust = !playerTurn(dealer);
+            for (final Map.Entry<Player, Integer> e : players.entrySet())
+            {
+                final Player player = e.getKey();
+                if (player.hasBusted()) e.setValue(RESULT_LOSS);
+                else if (dBust) e.setValue(RESULT_WIN);
+                else e.setValue(Integer.compare(player.getSoftScore(), dealer.getSoftScore()));
+            }
         }
-        player.reset();
-        dealer.reset();
-        return result;
+        // All players busted, there is no point in dealer having his turn
+        else players.entrySet().forEach(e -> e.setValue(RESULT_LOSS));
+
+        // If the specified percentage of the deck has been penetrated, perform a shuffle
+        if (shoe.penetration() >= penetration) reset();
+        dealer.reset(); players.keySet().forEach(Player::reset);
     }
 
-    /* Helper function for quick exiting out of the round. */
-    private int playRound(final Player player)
-    {
-        dealer.accept(shoe.deal());
-        dealer.accept(shoe.deal());
-        player.accept(shoe.deal());
-        player.accept(shoe.deal());
-
-        /* Perform the player's turn. */
-        if (player.getMaximumScore() != Player.MAXIMUM_SCORE && !playerTurn(player))
-            return 1;
-        /* Perform the dealer's turn. */
-        if (dealer.getMaximumScore() != Player.MAXIMUM_SCORE && !playerTurn(dealer))
-            return -1;
-        return Integer.compare(dealer.getMaximumScore(), player.getMaximumScore());
-    }
-
-    /* Performs a specified player's turn.
-    * This method assumes the player has been dealt two cards prior. */
+    /**
+     * Performs the specified player's turn
+     *
+     * A player may act assuming he hasn't busted or hit Blackjack.
+     * A player must either hit (dealing a new card) or stand (end turn).
+     *
+     * This function requires the player to have been dealt two cards prior.
+     *
+     * @return false if the player busted
+     */
     private boolean playerTurn(final Player player)
     {
-        assert player != null;
-        while (true)
+        if (player.getSoftScore() == Player.MAXIMUM_SCORE) return true; // Blackjack on first two cards
+        do
+        {
             if (player.hit())
-            {
-                player.accept(shoe.deal());
-                if (player.hasBusted())
-                    return false;
-                if (player.getMaximumScore() == Player.MAXIMUM_SCORE)
-                    return true;
-            }
-            else return true;
+                dealTo(player, shoe.deal());
+            else break;
+            if (player.hasBusted()) return false;
+            // Check for both kinds of Blackjack (soft & hard)
+        } while (player.getSoftScore() != Player.MAXIMUM_SCORE && player.getHardScore() != Player.MAXIMUM_SCORE);
+        return true;
+    }
+
+    // ** TODO: have a 'while game in progress' setup
+    // ** TODO: resolve each player's game states one by one, in segments
+    // ** TODO: -- may not be possible?
+    // ** TODO: player A cannot find out if he won until player B finishes hitting
+
+    /*
+     * INHERITED BLACKJACK CLASS
+     * * Upon a card to a player, check if they either bust or blackjack
+     * * If either, initiate a print out indicating their turn has abruptly ended
+     */
+
+    /// ----------------------- TODO: Below are inheritance-safe methods
+
+    /**
+     * Retrieves the results the Blackjack game, updated per-round
+     *
+     * Each round, the results of the round will be stored in the map.
+     * Only one `getResults` call is needed, as no new map will be created.
+     * Values signify results, and are among this set { 1: win, -1: loss, 0: push }.
+     * Result values will not update until a new round concludes.
+     * Result values are initialized to `0` (push) until the first round concludes.
+     * The dealer is not included in the set of players.
+     *
+     * @return Read-only map of players -> results of their most recent round results
+     */
+    public Map<Player, Integer> getResults()
+    {
+        return player_ro;
     }
 
     /**
-     * Resets the Blackjack table.
+     * Resets the Blackjack table
      */
     public void reset()
     {
         shoe.shuffle();
+    }
+
+    /**
+     * @param player Player to deal a card to
+     */
+    void dealTo(final Player player, final Card card)
+    {
+        player.accept(card);
     }
 }

@@ -19,16 +19,14 @@
 package test;
 
 import blackjack.Blackjack;
+import blackjack.player.Player;
 import genetic.Agent;
 import genetic.ConcreteAgent;
 import genetic.Mutations;
 import genetic.Simulation;
 
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.ObjectInputStream;
 import java.util.IntSummaryStatistics;
+import java.util.Map;
 import java.util.Random;
 import java.util.function.ToIntFunction;
 
@@ -49,9 +47,9 @@ public class Tester
         final boolean MULTI_THREADED = true;
         final int BJ_ROUNDS_PER_AGENT = 25000;
         final int BJ_SHOE_SIZE = 8;
-        final int BJ_ROUNDS_PER_SHUFFLE = 16;
+        final float BJ_SHOE_PENETRATION = 0.5f;
 
-        try (final InputStream is = new FileInputStream("myObj"))
+        /* try (final InputStream is = new FileInputStream("myObj"))
         {
             final ObjectInputStream ois = new ObjectInputStream(is);
             final ConcreteAgent ca = (ConcreteAgent)ois.readObject();
@@ -62,7 +60,7 @@ public class Tester
         catch (IOException | ClassNotFoundException e)
         {
             e.printStackTrace();
-        }
+        } */
 
         /* Controls the entire lifecycle of agents. */
         final Simulation<ConcreteAgent> sim = new Simulation<>()
@@ -80,12 +78,17 @@ public class Tester
             /* Creates a cost function to be used when assessing agents. */
             @Override public ToIntFunction<ConcreteAgent> initCostFunc()
             {
-                final Blackjack bJack = new Blackjack(BJ_SHOE_SIZE, BJ_ROUNDS_PER_SHUFFLE, generator.nextLong());
+                final Blackjack bJack = new Blackjack(BJ_SHOE_SIZE, generator.nextLong(), BJ_SHOE_PENETRATION);
                 return agent ->
                 {
+                    bJack.dealIn(agent);
+                    final Map<Player, Integer> results = bJack.getResults();
                     int cost = 0;
                     for (int i = 0; i < BJ_ROUNDS_PER_AGENT; i++)
-                        cost += bJack.playRound(agent, 1);
+                    {
+                        bJack.playRound();
+                        cost += results.get(agent);
+                    }
                     bJack.reset();
                     return cost;
                 };

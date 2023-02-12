@@ -19,6 +19,8 @@
 package blackjack;
 
 import blackjack.card.Card;
+import blackjack.player.Dealer;
+import blackjack.player.Player;
 
 import java.util.*;
 import java.util.function.Function;
@@ -90,6 +92,13 @@ public class Blackjack
                         Function.identity(), v -> RESULT_PUSH)));
     }
 
+    /**
+     * Plays a round of Blackjack with the players currently dealt-in
+     *
+     * The round proceeds until all players either bust, blackjack, or stand.
+     * This game of Blackjack uses the SOFT-17 rule-set (dealer stands on soft 17).
+     * This game of Blackjack uses the LOSS on dealer/player PUSH rule-set.
+     */
     public void playRound()
     {
         if (players.isEmpty()) throw new IllegalStateException("Cannot play round without any player participants");
@@ -106,18 +115,17 @@ public class Blackjack
                 .filter(this::playerTurn)
                 .findAny().isPresent();
 
-        if (fullRound)
+        if (fullRound) // Only proceed with dealer's turn if a player didn't bust
         {
-            final boolean dBust = !playerTurn(dealer);
+            final boolean dealerBust = !playerTurn(dealer);
             for (final Map.Entry<Player, Integer> e : players.entrySet())
             {
                 final Player player = e.getKey();
                 if (player.hasBusted()) e.setValue(RESULT_LOSS);
-                else if (dBust) e.setValue(RESULT_WIN);
+                else if (dealerBust) e.setValue(RESULT_WIN);
                 else e.setValue(Integer.compare(player.getSoftScore(), dealer.getSoftScore()));
             }
         }
-        // All players busted, there is no point in dealer having his turn
         else players.entrySet().forEach(e -> e.setValue(RESULT_LOSS));
 
         // If the specified percentage of the deck has been penetrated, perform a shuffle
@@ -131,7 +139,7 @@ public class Blackjack
      * A player may act assuming he hasn't busted or hit Blackjack.
      * A player must either hit (dealing a new card) or stand (end turn).
      *
-     * This function requires the player to have been dealt two cards prior.
+     * This function requires the player to have been dealt two cards prior
      *
      * @return false if the player busted
      */
@@ -149,19 +157,6 @@ public class Blackjack
         return true;
     }
 
-    // ** TODO: have a 'while game in progress' setup
-    // ** TODO: resolve each player's game states one by one, in segments
-    // ** TODO: -- may not be possible?
-    // ** TODO: player A cannot find out if he won until player B finishes hitting
-
-    /*
-     * INHERITED BLACKJACK CLASS
-     * * Upon a card to a player, check if they either bust or blackjack
-     * * If either, initiate a print out indicating their turn has abruptly ended
-     */
-
-    /// ----------------------- TODO: Below are inheritance-safe methods
-
     /**
      * Retrieves the results the Blackjack game, updated per-round
      *
@@ -176,7 +171,7 @@ public class Blackjack
      */
     public Map<Player, Integer> getResults()
     {
-        return player_ro;
+        return players_ro;
     }
 
     /**

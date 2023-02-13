@@ -19,7 +19,9 @@
 package test;
 
 import blackjack.Blackjack;
+import blackjack.ConsoleBlackjack;
 import blackjack.player.Player;
+import blackjack.player.UserPlayer;
 import genetic.Agent;
 import genetic.ConcreteAgent;
 import genetic.Mutations;
@@ -40,7 +42,8 @@ public class Tester
     {
         System.out.println("Starting.");
 
-        final Random generator = new Random(423298675324L);
+
+        final long SEED = 202381;
         final float MUTATION_RATE = 0.0f;
         final int POPULATION_SIZE = 2000;
         final int MAX_GENERATIONS = 100;
@@ -48,6 +51,16 @@ public class Tester
         final int BJ_ROUNDS_PER_AGENT = 25000;
         final int BJ_SHOE_SIZE = 8;
         final float BJ_SHOE_PENETRATION = 0.5f;
+        final Random generator = new Random(SEED);
+
+        final ConsoleBlackjack cbj = new ConsoleBlackjack(8, 52, 0.5f);
+        final Player user = new UserPlayer();
+        final Player blankAgent = new ConcreteAgent(SEED);
+        cbj.dealIn(user, blankAgent);
+        for (int i = 0; i < 3; i++)
+            cbj.playRound();
+
+        if (System.currentTimeMillis() > 0) return;
 
         /* try (final InputStream is = new FileInputStream("myObj"))
         {

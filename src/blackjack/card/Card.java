@@ -50,6 +50,8 @@ public class Card
                     "\uD83C\uDCCA", "\uD83C\uDCCB", "\uD83C\uDCCD", "\uD83C\uDCCE"}
     };
 
+    private static final String CARD_FORMAT = "%c%s-%s"; // ex. J♣-🃋
+
     /**
      * @param face Face of the card
      * @param suit Suit of the card
@@ -89,6 +91,6 @@ public class Card
      */
     @Override public String toString()
     {
-        return String.format("%s of %s", face.toString(), suit.toString());
+        return String.format(CARD_FORMAT, face.getLetter(), suit.getSymbol(), getCardSymbol());
     }
 }

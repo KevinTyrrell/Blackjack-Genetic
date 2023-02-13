@@ -104,9 +104,9 @@ public class Blackjack
         if (players.isEmpty()) throw new IllegalStateException("Cannot play round without any player participants");
         // Card deal order is always one card to each player, one to dealer, and so on.
         // This order is imperative for subclasses which track the game event-by-event.
-        players.keySet().forEach(p -> dealTo(dealer, shoe.deal()));
+        players.keySet().forEach(p -> dealTo(p, shoe.deal()));
         dealTo(dealer, shoe.deal());
-        players.keySet().forEach(p -> dealTo(dealer, shoe.deal()));
+        players.keySet().forEach(p -> dealTo(p, shoe.deal()));
         dealTo(dealer, shoe.deal());
 
         // Intellij does not realize looping over entire set is mandatory via 'filter'
@@ -129,8 +129,8 @@ public class Blackjack
         else players.entrySet().forEach(e -> e.setValue(RESULT_LOSS));
 
         // If the specified percentage of the deck has been penetrated, perform a shuffle
-        if (shoe.penetration() >= penetration) reset();
-        dealer.reset(); players.keySet().forEach(Player::reset);
+        if (shoe.penetration() >= penetration) shoe.shuffle();
+        reset();
     }
 
     /**
@@ -145,7 +145,7 @@ public class Blackjack
      */
     private boolean playerTurn(final Player player)
     {
-        if (player.getSoftScore() == Player.MAXIMUM_SCORE) return true; // Blackjack on first two cards
+        if (player.hasBlackjack()) return true; // Blackjack on first two cards
         do
         {
             if (player.hit())
@@ -153,7 +153,7 @@ public class Blackjack
             else break;
             if (player.hasBusted()) return false;
             // Check for both kinds of Blackjack (soft & hard)
-        } while (player.getSoftScore() != Player.MAXIMUM_SCORE && player.getHardScore() != Player.MAXIMUM_SCORE);
+        } while (!player.hasBlackjack());
         return true;
     }
 
@@ -179,7 +179,8 @@ public class Blackjack
      */
     public void reset()
     {
-        shoe.shuffle();
+        dealer.reset();
+        players.keySet().forEach(Player::reset);
     }
 
     /**

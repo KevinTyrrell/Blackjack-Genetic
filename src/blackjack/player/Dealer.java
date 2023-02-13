@@ -28,14 +28,6 @@ public class Dealer extends Player
     /* A dealer must hit if their score is less than 17 */
     private static int MINIMUM_DEALER_SCORE = 17;
 
-    private final String name;
-
-    public Dealer()
-    {
-        /* Cache the dealer's name */
-        name = super.toString().replace("Player", "Dealer");
-    }
-
     /**
      * Determines whether or not the dealer should hit
      *
@@ -53,6 +45,6 @@ public class Dealer extends Player
      */
     @Override public String toString()
     {
-        return name;
+        return "Dealer";
     }
 }

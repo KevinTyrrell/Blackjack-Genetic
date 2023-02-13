@@ -30,22 +30,23 @@ import java.util.Set;
  */
 public enum Face
 {
-    ACE(1),
-    TWO(2),
-    THREE(3),
-    FOUR(4),
-    FIVE(5),
-    SIX(6),
-    SEVEN(7),
-    EIGHT(8),
-    NINE(9),
-    TEN(10),
-    JACK(10),
-    QUEEN(10),
-    KING(10);
+    ACE(1, 'A'),
+    TWO(2, '2'),
+    THREE(3, '3'),
+    FOUR(4, '4'),
+    FIVE(5, '5'),
+    SIX(6, '6'),
+    SEVEN(7, '7'),
+    EIGHT(8, '8'),
+    NINE(9, '9'),
+    TEN(10, 'T'),
+    JACK(10, 'J'),
+    QUEEN(10, 'Q'),
+    KING(10, 'K');
 
     private final int value;
     private final String name;
+    private final char letter;
 
     private static final Set<Face> set = Collections.unmodifiableSet(EnumSet.allOf(Face.class));
 
@@ -57,13 +58,14 @@ public enum Face
         return set;
     }
 
-    Face(final int value)
+    Face(final int value, final char letter)
     {
         assert value > 0;
         this.value = value;
         final String n = name();
         assert n.length() > 1;
         name = n.charAt(0) + n.substring(1).toLowerCase();
+        this.letter = letter;
     }
 
     /**
@@ -82,6 +84,14 @@ public enum Face
     public String getName()
     {
         return name;
+    }
+
+    /**
+     * @return letter symbol representing the card face
+     */
+    public char getLetter()
+    {
+        return letter;
     }
 
     /**

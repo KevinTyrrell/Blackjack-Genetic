@@ -1,5 +1,5 @@
 /*
- *     <one line to give the program's name and a brief idea of what it does.>
+ *     Genetic algorithm which teaches agents how to play Blackjack.
  *     Copyright (C) 2023  Kevin Tyrrell
  *
  *     This program is free software: you can redistribute it and/or modify
@@ -24,8 +24,10 @@ import blackjack.card.Face;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Objects;
 import java.util.function.Consumer;
+
+import static java.util.Objects.requireNonNull;
+
 
 /**
  * Defines a Blackjack player
@@ -38,11 +40,23 @@ public abstract class Player implements Consumer<Card>
 
     private int score = 0;
     private boolean hasAce = false;
+    private final String name;
 
     /* Maximum player score - anything beyond is considered a 'bust' */
     public static final int MAXIMUM_SCORE = 21;
 
     private static final int ACE_ADDITIONAL_SCORE = 10;
+    private static final String DEFAULT_NAME_FORMAT = "Player (%s)";
+
+    public Player(final String name)
+    {
+        this.name = String.format(DEFAULT_NAME_FORMAT, requireNonNull(name));
+    }
+
+    public Player()
+    {
+        this.name = String.format(DEFAULT_NAME_FORMAT, Integer.toHexString(hashCode()));
+    }
 
     /**
      * Determines whether or not the player should hit
@@ -61,7 +75,7 @@ public abstract class Player implements Consumer<Card>
      */
     @Override public void accept(final Card card)
     {
-        field.add(Objects.requireNonNull(card));
+        field.add(requireNonNull(card));
         final Face f = card.getFace();
         score += f.getValue();
         if (f == Face.ACE)
@@ -121,6 +135,14 @@ public abstract class Player implements Consumer<Card>
     }
 
     /**
+     * @return true if the player's score is 21 (Blackjack)
+     */
+    public boolean hasBlackjack()
+    {
+        return getSoftScore() == MAXIMUM_SCORE;
+    }
+
+    /**
      * Resets the player's field
      */
     public void reset()
@@ -135,6 +157,6 @@ public abstract class Player implements Consumer<Card>
      */
     @Override public String toString()
     {
-        return String.format("Player{score=%d,maxScore=%d,field=%s}", score, getSoftScore(), field.toString());
+        return name;
     }
 }

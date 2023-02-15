@@ -46,28 +46,22 @@ public class ConsoleBlackjack extends Blackjack
 
     @Override public void reset()
     {
-        switch (state)
-        {
-            case AWAIT_DEALER:
-                /*
-                 * Game ended without dealer needing to deal himself a card. ex.
-                 * -> All players busted, therefore dealer does not need to take his turn.
-                 * -> Dealer stood or got Blackjack with two cards.
-                 * In these scenarios, we still have to reveal the hidden card.
-                 */
-                System.out.printf("The Dealer reveals: %s %s\n", hiddenCard, dealer.getField());
-
-        }
+        /*
+         * Game ended without dealer needing to deal himself a card. ex.
+         * -> All players busted, therefore dealer does not need to take his turn.
+         * -> Dealer stood or got Blackjack with two cards.
+         * In these scenarios, we still have to reveal the hidden card.
+         */
+        if (state == AWAIT_DEALER)
+            System.out.printf("The Dealer reveals: %s %s\n", hiddenCard, dealer.getField());
 
         for (Map.Entry<Player, Integer> e : results.entrySet())
-        {
             switch (e.getValue())
             {
                 case -1: System.out.println(e.getKey() + " has lost the round."); break;
                 case 1: System.out.println(e.getKey() + " has won the round."); break;
                 default: System.out.println(e.getKey() + "has pushed with the dealer.");
             }
-        }
 
         cardsDealt = 0;
         state = INIT;
@@ -77,6 +71,9 @@ public class ConsoleBlackjack extends Blackjack
     @Override void dealTo(Player player, Card card)
     {
         super.dealTo(player, card);
+
+        /* Blackjack class does not support inspecting the round while in-progress.
+        * Therefore, use dealTo events to determine what stage the game is currently in. */
         switch (state)
         {
             case INIT:
@@ -133,14 +130,12 @@ public class ConsoleBlackjack extends Blackjack
 
     private void checkBlackjack(final Player p)
     {
-        assert p != null;
         if (p.hasBlackjack())
             System.out.printf("BLACKJACK! %s is out of the round.\n", p);
     }
 
     private boolean checkBust(final Player p)
     {
-        assert p != null;
         if (p.hasBusted())
         {
             System.out.printf("BUST! %s is out of the round.\n", p);

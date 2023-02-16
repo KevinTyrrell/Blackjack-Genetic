@@ -1,6 +1,6 @@
 /*
  *     Genetic algorithm which teaches agents how to play Blackjack.
- *     Copyright (C) 2023  Kevin Tyrrell
+ *     Copyright (C) 2019-2023  Kevin Tyrrell
  *
  *     This program is free software: you can redistribute it and/or modify
  *     it under the terms of the GNU General Public License as published by
@@ -26,6 +26,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.function.Consumer;
 
+import static java.lang.String.format;
 import static java.util.Objects.requireNonNull;
 
 
@@ -50,12 +51,12 @@ public abstract class Player implements Consumer<Card>
 
     public Player(final String name)
     {
-        this.name = String.format(DEFAULT_NAME_FORMAT, requireNonNull(name));
+        this.name = format(DEFAULT_NAME_FORMAT, requireNonNull(name));
     }
 
     public Player()
     {
-        this.name = String.format(DEFAULT_NAME_FORMAT, Integer.toHexString(hashCode()));
+        this.name = format(DEFAULT_NAME_FORMAT, Integer.toHexString(hashCode()));
     }
 
     /**

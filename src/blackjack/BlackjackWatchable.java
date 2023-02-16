@@ -1,6 +1,6 @@
 /*
- *     <one line to give the program's name and a brief idea of what it does.>
- *     Copyright (C) 2023  Kevin Tyrrell
+ *     Genetic algorithm which teaches agents how to play Blackjack.
+ *     Copyright (C) 2019-2023  Kevin Tyrrell
  *
  *     This program is free software: you can redistribute it and/or modify
  *     it under the terms of the GNU General Public License as published by
@@ -19,8 +19,8 @@
 package blackjack;
 
 import blackjack.card.Card;
-
-import java.util.Map;
+import blackjack.player.Dealer;
+import blackjack.player.Player;
 
 
 public interface BlackjackWatchable
@@ -68,20 +68,6 @@ public interface BlackjackWatchable
      * @param p Player who has a Blackjack
      */
     void playerBlackjack(final Player p);
-
-    /**
-     * Retrieves a list of players (dealer excluded), and their round scores
-     *
-     * A player's results depends on the dealer's score. Possible results are as follows:
-     * '-1' LOSS: player bust or dealer higher score
-     * '1' WIN: player not busted and either dealer bust or player higher score
-     * '0' PUSH: player and dealer both not busted and equal score
-     *
-     * This function can also be called to see participants before the round has begun
-     *
-     * @return Map players -> their round results
-     */
-    Map<Player, Integer> roundResults();
 
     /**
      * Indicates the round is over

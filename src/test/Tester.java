@@ -19,7 +19,6 @@
 package test;
 
 import blackjack.Blackjack;
-import blackjack.ConsoleBlackjack;
 import blackjack.player.Player;
 import blackjack.player.UserPlayer;
 import genetic.Agent;

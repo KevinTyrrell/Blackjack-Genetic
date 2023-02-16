@@ -22,6 +22,8 @@ import blackjack.card.Card;
 import blackjack.player.Dealer;
 import blackjack.player.Player;
 
+import java.util.Map;
+
 
 public interface BlackjackWatchable
 {
@@ -52,8 +54,9 @@ public interface BlackjackWatchable
      *
      * @param d Dealer who revealed their card
      * @param c Card which was revealed
+     * @param afterRound true if reveal is happening while the round is already over
      */
-    void dealerRevealCard(final Dealer d, final Card c);
+    void dealerRevealCard(final Dealer d, final Card c, final boolean afterRound);
 
     /**
      * Indicates a player has hit into a 'bust'
@@ -71,6 +74,8 @@ public interface BlackjackWatchable
 
     /**
      * Indicates the round is over
+     *
+     * @param results Round results per-player (win/loss/push)
      */
-    void reset();
+    void reset(final Map<Player, Integer> results);
 }

@@ -110,11 +110,10 @@ public class Blackjack
         players.keySet().forEach(p -> dealTo(p, shoe.deal()));
         dealTo(dealer, shoe.deal());
 
-        // Intellij does not realize looping over entire set is mandatory via 'filter'
-        @SuppressWarnings("SimplifyStreamApiCallChains")
+        //noinspection ReplaceInefficientStreamCount
         final boolean fullRound = players.keySet().stream()
                 .filter(this::playerTurn)
-                .findAny().isPresent();
+                .count() > 0;
 
         if (fullRound) // Only proceed with dealer's turn if a player didn't bust
         {

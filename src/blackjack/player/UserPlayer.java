@@ -29,17 +29,18 @@ public class UserPlayer extends Player
     /* Key words in which are expected from the user -> whether to hit or stand */
     private static final Map<String, Boolean> keywords = Collections.unmodifiableMap(
             Map.of("hit", true, "stand", false));
-    private static final String HIT_PROMPT = "Player Turn - confirm 'hit' or 'stand': ";
+    private static final String FMT_HIT_PROMPT = "%s Turn - confirm 'hit' or 'stand': ";
 
     @Override public boolean hit()
     {
         do
         {
-            System.out.printf(HIT_PROMPT);
+            System.out.printf(FMT_HIT_PROMPT, this);
 
             if (input.hasNextLine())
             {
-                final Boolean decision = keywords.get(input.nextLine().trim().toLowerCase());
+                final String t = input.nextLine().trim().toLowerCase();
+                final Boolean decision = keywords.get(t);
                 if (decision != null)
                     return decision;
                 System.out.println("Invalid input - Please try again.\n");

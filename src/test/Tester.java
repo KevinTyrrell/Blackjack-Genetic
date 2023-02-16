@@ -18,7 +18,9 @@
 
 package test;
 
+import blackjack.BJEventTranslator;
 import blackjack.Blackjack;
+import blackjack.BlackjackConsoleView;
 import blackjack.player.Player;
 import blackjack.player.UserPlayer;
 import genetic.Agent;
@@ -29,6 +31,7 @@ import genetic.Simulation;
 import java.util.IntSummaryStatistics;
 import java.util.Map;
 import java.util.Random;
+import java.util.Scanner;
 import java.util.function.ToIntFunction;
 
 /**
@@ -42,7 +45,7 @@ public class Tester
         System.out.println("Starting.");
 
 
-        final long SEED = 202381;
+        final long SEED = 20238111;
         final float MUTATION_RATE = 0.0f;
         final int POPULATION_SIZE = 2000;
         final int MAX_GENERATIONS = 100;
@@ -52,13 +55,17 @@ public class Tester
         final float BJ_SHOE_PENETRATION = 0.5f;
         final Random generator = new Random(SEED);
 
-        final ConsoleBlackjack cbj = new ConsoleBlackjack(8, 52, 0.5f);
+        final BlackjackConsoleView bcv = new BlackjackConsoleView();
+        final Blackjack bj = new BJEventTranslator(bcv, BJ_SHOE_SIZE, SEED, BJ_SHOE_PENETRATION);
         final Player user = new UserPlayer();
-        final Player blankAgent = new ConcreteAgent(SEED);
-        cbj.dealIn(user, blankAgent);
-        for (int i = 0; i < 3; i++)
-            cbj.playRound();
-
+        final Player extra = new UserPlayer();
+        bj.dealIn(user, extra);
+        final Scanner sc = new Scanner(System.in);
+        for (int i = 0; i < 10; i++)
+        {
+            bj.playRound();
+            sc.nextLine();
+        }
         if (System.currentTimeMillis() > 0) return;
 
         /* try (final InputStream is = new FileInputStream("myObj"))

@@ -47,7 +47,7 @@ public abstract class Player implements Consumer<Card>
     public static final int MAXIMUM_SCORE = 21;
 
     private static final int ACE_ADDITIONAL_SCORE = 10;
-    private static final String DEFAULT_NAME_FORMAT = "Player (%s)";
+    private static final String DEFAULT_NAME_FORMAT = "P-%s";
 
     public Player(final String name)
     {

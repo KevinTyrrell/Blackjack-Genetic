@@ -65,11 +65,11 @@ public class BJEventTranslator extends Blackjack
          * In these scenarios, we still have to reveal the hidden card.
          */
         if (state == AWAIT_DEALER)
-            eventHandler.dealerRevealCard(dealer, hiddenCard);
+            eventHandler.dealerRevealCard(dealer, hiddenCard, true);
         cardsDealt = 0;
         state = ROUND_START;
         super.reset();
-        eventHandler.reset();
+        eventHandler.reset(getResults());
     }
 
     @Override void dealTo(Player player, Card card)
@@ -95,12 +95,12 @@ public class BJEventTranslator extends Blackjack
                 }
                 eventHandler.cardDealt(player, card); break;
             case DEAL_PLAYERS:
-                if (cardsDealt == 2 * (participants + 1))
+                if (cardsDealt == 2 * participants)
                 {
                     // Dealer's hidden card has to be treated in a special manner
                     eventHandler.dealerHideCard(dealer);
                     hiddenCard = card;
-                    state = PLAYER_TURNS;
+                    state = AWAIT_DEALER;
                 }
                 else
                 {
@@ -112,14 +112,16 @@ public class BJEventTranslator extends Blackjack
                 // At some point the dealer will take his turn, but we're not sure when
                 if (player == dealer)
                 {
-                    eventHandler.dealerRevealCard(dealer, hiddenCard);
+                    eventHandler.dealerRevealCard(dealer, hiddenCard, false);
                     state = PLAYER_TURNS; // No need to reveal the card again
                 }
             case PLAYER_TURNS:
                 eventHandler.cardDealt(player, card);
                 if (!player.hasBusted()) // Busting and Blackjack are mutually exclusive
+                {
                     if (player.hasBlackjack())
                         eventHandler.playerBlackjack(player);
+                }
                 else eventHandler.playerBust(player);
         }
     }

@@ -19,6 +19,7 @@
 package blackjack;
 
 import blackjack.card.Card;
+import blackjack.card.Shoe;
 import blackjack.player.Dealer;
 import blackjack.player.Player;
 

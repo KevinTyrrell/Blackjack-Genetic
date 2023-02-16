@@ -22,9 +22,6 @@ import blackjack.card.Card;
 import blackjack.player.Dealer;
 import blackjack.player.Player;
 
-import java.util.List;
-import java.util.Map;
-
 import static java.util.Objects.requireNonNull;
 import static blackjack.BJEventTranslator.BlackjackState.*;
 
@@ -40,7 +37,6 @@ public class BJEventTranslator extends Blackjack
 
     private BlackjackState state = INIT_PLAYERS;
 
-    private Map<Player, Integer> results = null;
     private Dealer dealer = null;
     private Card hiddenCard = null;
     private int cardsDealt = 0;
@@ -86,8 +82,7 @@ public class BJEventTranslator extends Blackjack
         switch (state)
         {
             case INIT_PLAYERS:
-                results = getResults();
-                participants = results.size() + 1; // Include the dealer
+                participants = getResults().size() + 1; // Include the dealer
             case ROUND_START:
                 eventHandler.roundStart();
                 state = FIND_DEALER;

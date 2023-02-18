@@ -18,20 +18,16 @@
 
 package test;
 
-import blackjack.BJEventTranslator;
 import blackjack.Blackjack;
-import blackjack.BlackjackConsoleView;
 import blackjack.player.Player;
-import blackjack.player.UserPlayer;
 import genetic.Agent;
 import genetic.ConcreteAgent;
-import genetic.Mutations;
+import genetic.Mutation;
 import genetic.Simulation;
 
 import java.util.IntSummaryStatistics;
 import java.util.Map;
 import java.util.Random;
-import java.util.Scanner;
 import java.util.function.ToIntFunction;
 
 /**
@@ -77,7 +73,7 @@ public class Tester
 
             @Override public void mutateAgent(final Agent agent)
             {
-                Mutations.flip(agent, MUTATION_RATE, generator);
+                Mutation.flip(agent, MUTATION_RATE, generator);
             }
 
             /* Creates a cost function to be used when assessing agents. */

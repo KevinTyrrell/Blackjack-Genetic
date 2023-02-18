@@ -26,7 +26,7 @@ package blackjack.player;
 public class Dealer extends Player
 {
     /* A dealer must hit if their score is less than 17 */
-    private static int MINIMUM_DEALER_SCORE = 17;
+    private static final int MINIMUM_DEALER_SCORE = 17;
 
     /**
      * Determines whether or not the dealer should hit

@@ -72,7 +72,7 @@ public class Blackjack
     {
         if (shoeSize <= 0) throw new IllegalArgumentException("Shoe size must be positive and non-zero");
         if (penetration < 0.0f || penetration > 1.0f)
-            throw new IllegalArgumentException("Penetration threshold must be within bounds [0.0, 1.0]");
+            throw new IllegalArgumentException("Penetration threshold must be within the domain: [0.0, 1.0]");
         shoe = new Shoe(shoeSize, seed);
         this.penetration = penetration;
         // Track all players participating at the Blackjack table

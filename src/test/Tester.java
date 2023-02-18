@@ -73,7 +73,9 @@ public class Tester
 
             @Override public void mutateAgent(final Agent agent)
             {
-                Mutation.flip(agent, MUTATION_RATE, generator);
+                final int[] genes = agent.getWeights();
+                for (int i = 0; i < genes.length; i++)
+                    genes[i] = Mutation.UNIFORM.perform(genes[i], generator, MUTATION_RATE);
             }
 
             /* Creates a cost function to be used when assessing agents. */

@@ -105,10 +105,11 @@ public class Blackjack
         if (players.isEmpty()) throw new IllegalStateException("Cannot play round without any player participants");
         // Card deal order is always one card to each player, one to dealer, and so on.
         // This order is imperative for subclasses which track the game event-by-event.
-        players.keySet().forEach(p -> dealTo(p, shoe.deal()));
-        dealTo(dealer, shoe.deal());
-        players.keySet().forEach(p -> dealTo(p, shoe.deal()));
-        dealTo(dealer, shoe.deal());
+        for (int i = 0; i < 2; i++)
+        {
+            players.keySet().forEach(p -> dealTo(p, shoe.deal()));
+            dealTo(dealer, shoe.deal());
+        }
 
         //noinspection ReplaceInefficientStreamCount
         final boolean fullRound = players.keySet().stream()

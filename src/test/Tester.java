@@ -44,7 +44,6 @@ public class Tester
     {
         System.out.println("Starting.");
 
-
         final long SEED = 20238111;
         final float MUTATION_RATE = 0.0f;
         final int POPULATION_SIZE = 2000;
@@ -54,19 +53,6 @@ public class Tester
         final int BJ_SHOE_SIZE = 8;
         final float BJ_SHOE_PENETRATION = 0.5f;
         final Random generator = new Random(SEED);
-
-        final BlackjackConsoleView bcv = new BlackjackConsoleView();
-        final Blackjack bj = new BJEventTranslator(bcv, BJ_SHOE_SIZE, SEED, BJ_SHOE_PENETRATION);
-        final Player user = new UserPlayer();
-        final Player extra = new UserPlayer();
-        bj.dealIn(user, extra);
-        final Scanner sc = new Scanner(System.in);
-        for (int i = 0; i < 10; i++)
-        {
-            bj.playRound();
-            sc.nextLine();
-        }
-        if (System.currentTimeMillis() > 0) return;
 
         /* try (final InputStream is = new FileInputStream("myObj"))
         {
@@ -97,9 +83,9 @@ public class Tester
             /* Creates a cost function to be used when assessing agents. */
             @Override public ToIntFunction<ConcreteAgent> initCostFunc()
             {
-                final Blackjack bJack = new Blackjack(BJ_SHOE_SIZE, generator.nextLong(), BJ_SHOE_PENETRATION);
                 return agent ->
                 {
+                    final Blackjack bJack = new Blackjack(BJ_SHOE_SIZE, generator.nextLong(), BJ_SHOE_PENETRATION);
                     bJack.dealIn(agent);
                     final Map<Player, Integer> results = bJack.getResults();
                     int cost = 0;

@@ -43,8 +43,8 @@ public class Shoe
     private static final int DEFAULT_DECK_SIZE = Face.values().length * Suit.values().length;
 
     /**
-     * @param decks Number of decks to be included into the shoe
-     * @param seed Seed to be used for the shoe
+     * @param decks Number of decks to be shuffled together
+     * @param seed Random seed sequence
      */
     public Shoe(final int decks, final long seed)
     {

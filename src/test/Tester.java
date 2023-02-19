@@ -22,7 +22,7 @@ import blackjack.Blackjack;
 import blackjack.player.Player;
 import genetic.agent.Agent;
 import genetic.agent.ConcreteAgent;
-import genetic.Mutation;
+import genetic.gene.Mutation;
 import genetic.Simulation;
 
 import java.util.IntSummaryStatistics;

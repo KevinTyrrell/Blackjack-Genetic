@@ -20,8 +20,8 @@ package test;
 
 import blackjack.Blackjack;
 import blackjack.player.Player;
-import genetic.Agent;
-import genetic.ConcreteAgent;
+import genetic.agent.Agent;
+import genetic.agent.ConcreteAgent;
 import genetic.Mutation;
 import genetic.Simulation;
 

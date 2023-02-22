@@ -45,7 +45,7 @@ public class Tester
         final int POPULATION_SIZE = 2000;
         final int MAX_GENERATIONS = 100;
         final boolean MULTI_THREADED = true;
-        final int BJ_ROUNDS_PER_AGENT = 25000;
+        final int BJ_ROUNDS_PER_AGENT = 1000000;
         final int BJ_SHOE_SIZE = 8;
         final float BJ_SHOE_PENETRATION = 0.5f;
         final Random generator = new Random(SEED);

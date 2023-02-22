@@ -33,11 +33,11 @@ public class ConcreteAgent extends Player implements Agent<ConcreteAgent>, Seria
     private final int[] weights = new int[2 * 19]; // Two dimensions represented as a single dimensional array
 
     /**
-     * @param generator Random sequence generator
+     * @param generator Random seed sequence
      */
-    public ConcreteAgent(final Random generator)
+    public ConcreteAgent(final long seed)
     {
-        this.generator = generator;
+        this.generator = new Random(seed);
     }
 
     /**

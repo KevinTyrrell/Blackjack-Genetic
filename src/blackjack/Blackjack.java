@@ -22,6 +22,7 @@ import blackjack.card.Card;
 import blackjack.card.Shoe;
 import blackjack.player.Dealer;
 import blackjack.player.Player;
+import util.Utilities;
 
 import java.util.*;
 import java.util.function.Function;
@@ -29,6 +30,7 @@ import java.util.stream.Collectors;
 
 import static java.lang.System.currentTimeMillis;
 import static java.util.Objects.requireNonNull;
+import static util.Utilities.validateDomain;
 
 
 /**
@@ -71,10 +73,8 @@ public class Blackjack
     public Blackjack(final int shoeSize, final long seed, final float penetration)
     {
         if (shoeSize <= 0) throw new IllegalArgumentException("Shoe size must be positive and non-zero");
-        if (penetration < 0.0f || penetration > 1.0f)
-            throw new IllegalArgumentException("Penetration threshold must be within the domain: [0.0, 1.0]");
+        this.penetration = validateDomain(penetration, 0.0f, 1.0f);
         shoe = new Shoe(shoeSize, seed);
-        this.penetration = penetration;
         // Track all players participating at the Blackjack table
         players = new LinkedHashMap<>();
         players_ro = Collections.unmodifiableMap(players);

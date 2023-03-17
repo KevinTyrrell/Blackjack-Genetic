@@ -18,17 +18,42 @@
 
 package test;
 
-import static org.junit.jupiter.api.Assertions.*;
+import genetic.Population;
+import genetic.agent.ConcreteAgent;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
+import java.util.*;
 
 
-class Test
+class TestGradient
 {
-    @org.junit.jupiter.api.BeforeEach void setUp()
-    {
+    private static final int NUM_AGENTS = 100;
+    private static final long SEED = 418512845194L;
+    private static final Random gen = new Random(SEED);
 
+    @BeforeEach void setUp()
+    {
+        final Population<ConcreteAgent> pop = new Population<>()
+        {
+            @Override public double[] getFitnessCosts()
+            {
+                return new double[0];
+            }
+
+            @Override public List<ConcreteAgent> getPopulation()
+            {
+                return null;
+            }
+
+            @Override public void populate(int agentCount)
+            {
+
+            }
+        };
     }
 
-    @org.junit.jupiter.api.Test void apply()
+    @Test void apply()
     {
     }
 }

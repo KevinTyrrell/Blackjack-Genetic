@@ -38,17 +38,12 @@ import static util.Utilities.validateDomain;
  *
  * Players must attempt to score as close to, but not exceeding, 21.
  * Score is determined by the card values in each player's hand.
- *
- * TODO: Allow for multiple players to face the dealer
- * TODO: Allow extension in which you could view the play-by-play of the game
  */
 public class Blackjack
 {
     private final Shoe shoe;
     private final float penetration;
     private final Player dealer = new Dealer();
-    // TODO: Subclass Blackjack specifically for 1 player, as an optimization.
-    // TODO: Subclassed class should create a fake 'Map<Player, Integer> facade.
     private final Map<Player, Integer> players, players_ro;
 
     /* Percentage of the deck dealt out such that a shuffle should occur */

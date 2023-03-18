@@ -50,19 +50,6 @@ public class Tester
         final float BJ_SHOE_PENETRATION = 0.5f;
         final Random generator = new Random(SEED);
 
-        /* try (final InputStream is = new FileInputStream("myObj"))
-        {
-            final ObjectInputStream ois = new ObjectInputStream(is);
-            final ConcreteAgent ca = (ConcreteAgent)ois.readObject();
-            final Blackjack bj = new Blackjack(8, 16, generator.nextLong());
-            for (int i = 0; i < 100; i++)
-                bj.playRound(ca, 1);
-        }
-        catch (IOException | ClassNotFoundException e)
-        {
-            e.printStackTrace();
-        } */
-
         /* Controls the entire lifecycle of agents. */
         final Simulation<ConcreteAgent> sim = new Simulation<>()
         {
@@ -137,17 +124,6 @@ public class Tester
         for (int i = 19; i < issWeights.length; i++)
             System.out.printf("  %5s%%", String.format("%3.2f", issWeights[i].getAverage() * 100 / Integer.MAX_VALUE));
         System.out.println();
-        
-//        final ConcreteAgent best = agents[0];
-//        try (final FileOutputStream fos = new FileOutputStream("myObj"))
-//        {
-//            final ObjectOutputStream oos = new ObjectOutputStream(fos);
-//            oos.writeObject(best);
-//        }
-//        catch (final IOException e)
-//        {
-//            e.printStackTrace();
-//        }
 
         System.out.println("Done.");
     }

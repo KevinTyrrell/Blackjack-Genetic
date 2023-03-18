@@ -20,10 +20,13 @@ package test;
 
 import blackjack.Blackjack;
 import blackjack.player.Player;
+import genetic.Population;
 import genetic.agent.Agent;
 import genetic.agent.ConcreteAgent;
+import genetic.gene.Crossover;
 import genetic.gene.Mutation;
 import genetic.Simulation;
+import genetic.gradient.Gradient;
 
 import java.util.IntSummaryStatistics;
 import java.util.Map;
@@ -53,17 +56,18 @@ public class Tester
         /* Controls the entire lifecycle of agents. */
         final Simulation<ConcreteAgent> sim = new Simulation<>()
         {
-            @Override public ConcreteAgent initAgent()
+            Population<ConcreteAgent> pop = new Population<ConcreteAgent>(Gradient.HALF_HALF)
             {
-                return new ConcreteAgent(generator.nextLong());
-            }
+                @Override public double evaluateFitness(ConcreteAgent agent)
+                {
+                    return 0;
+                }
+            };
 
-            @Override public void mutateAgent(final Agent agent)
-            {
-                final int[] genes = agent.getWeights();
-                for (int i = 0; i < genes.length; i++)
-                    genes[i] = Mutation.UNIFORM.perform(genes[i], generator, MUTATION_RATE);
-            }
+
+
+
+
 
             /* Creates a cost function to be used when assessing agents. */
             @Override public ToIntFunction<ConcreteAgent> initCostFunc()

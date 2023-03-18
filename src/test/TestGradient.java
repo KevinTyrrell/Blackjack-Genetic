@@ -20,6 +20,8 @@ package test;
 
 import genetic.Population;
 import genetic.agent.ConcreteAgent;
+import genetic.gradient.BirdshotGradient;
+import genetic.gradient.Gradient;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -28,32 +30,30 @@ import java.util.*;
 
 class TestGradient
 {
-    private static final int NUM_AGENTS = 100;
+    private static final int NUM_AGENTS = 16;
     private static final long SEED = 418512845194L;
     private static final Random gen = new Random(SEED);
 
+    private Population<ConcreteAgent> pop;
+
     @BeforeEach void setUp()
     {
-        final Population<ConcreteAgent> pop = new Population<>()
+        pop = new Population<>(NUM_AGENTS, () ->
         {
-            @Override public double[] getFitnessCosts()
-            {
-                return new double[0];
-            }
-
-            @Override public List<ConcreteAgent> getPopulation()
-            {
-                return null;
-            }
-
-            @Override public void populate(int agentCount)
-            {
-
-            }
-        };
+            final ConcreteAgent ca = new ConcreteAgent(SEED);
+            ca.randomizeWeights();
+            return ca;
+        });
     }
 
     @Test void apply()
     {
+        pop.performFitnessTest(value -> gen.nextDouble() * 25.0);
+        System.out.println(pop.getPopulation() + " - " + Arrays.toString(pop.getFitnessCosts()));
+        pop.sortPopulation();
+        System.out.println(pop.getPopulation() + " - " + Arrays.toString(pop.getFitnessCosts()));
+        final Gradient<ConcreteAgent> gradient = new BirdshotGradient<>(gen, 5.0f);
+        gradient.apply(pop);
+        System.out.println(pop.getPopulation() + " - " + Arrays.toString(pop.getFitnessCosts()));
     }
 }

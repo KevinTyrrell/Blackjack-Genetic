@@ -64,6 +64,17 @@ public class ConcreteAgent extends Player implements Agent<ConcreteAgent>, Seria
     }
 
     /**
+     * Randomizes the agent's weights
+     *
+     * Each weight is randomized from [0, Integer.MAX_VALUE].
+     * This function randomizes the agent's disposition towards all actions.
+     */
+    public void randomizeWeights()
+    {
+        randomizeWeights(generator);
+    }
+
+    /**
      * Retrieves the agent's weights
      *
      * Weights represent the agent's disposition towards an action.

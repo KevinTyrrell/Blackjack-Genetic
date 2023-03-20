@@ -27,9 +27,11 @@ import genetic.gene.Crossover;
 import genetic.gene.Mutation;
 import genetic.gradient.BirdshotGradient;
 import genetic.gradient.Gradient;
+import genetic.population.Repopulator;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.util.Arrays;
 import java.util.DoubleSummaryStatistics;
 import java.util.Map;
 import java.util.Random;
@@ -38,15 +40,16 @@ import java.util.Random;
 public class TestConvergence
 {
     private static final long SEED = 5213821584128L;
-    private static final int GENERATION_TARGET = 25, NUM_AGENTS = 8;
+    private static final int GENERATION_TARGET = 10, NUM_AGENTS = 1000;
     private static final float MUTATION_RATE = 0.15f, GRADIENT_SCALAR = 15;
 
     private static final int BJ_SHOE_SIZE = 8, BJ_ROUNDS_PER_AGENT = 100000;
     private static final float BJ_SHOE_PEN = 0.35f;
 
     private static final Random generator = new Random(SEED);
-    private static final Mutation mutator = Mutation.UNIFORM;
+    private static final Repopulator repopulator = Repopulator.TWO_PASS_FISCHER_YATES;
     private static final Crossover crosser = Crossover.UNIFORM;
+    private static final Mutation mutator = Mutation.UNIFORM;
     private static final Gradient<ConcreteAgent> gradient =
             new BirdshotGradient<>(generator, GRADIENT_SCALAR);
 
@@ -58,7 +61,7 @@ public class TestConvergence
 
     @BeforeEach public void setup()
     {
-        pop = new Population<>(NUM_AGENTS, generator, crosser, mutator, MUTATION_RATE)
+        pop = new Population<>(NUM_AGENTS, generator, repopulator, crosser, mutator, MUTATION_RATE)
         {
             @Override public double evaluateFitness(final ConcreteAgent agent)
             {
@@ -95,6 +98,8 @@ public class TestConvergence
                         dss.getMax() / BJ_ROUNDS_PER_AGENT);
             }
         };
-        sim.run(pop, GENERATION_TARGET, generator, gradient, false);
+        sim.run(pop, GENERATION_TARGET, generator, gradient, true);
+
+        System.out.println(Arrays.toString(pop.geneEvaluation()));
     }
 }

@@ -70,7 +70,7 @@ public class TestConvergence
                 for (int i = 0; i < BJ_ROUNDS_PER_AGENT; i++)
                 {
                     bj.playRound();
-                    cost += m.get(agent);
+                    cost += 1.0 - m.get(agent); // shift scores into win: 0, push: 1, loss: 2
                 }
                 return cost;
             }

@@ -20,7 +20,7 @@ package test;
 
 import blackjack.Blackjack;
 import blackjack.player.Player;
-import genetic.Population;
+import genetic.population.Population;
 import genetic.Simulation;
 import genetic.agent.ConcreteAgent;
 import genetic.gene.Crossover;

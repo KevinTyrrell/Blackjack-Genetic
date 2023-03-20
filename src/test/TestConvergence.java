@@ -52,13 +52,18 @@ public class TestConvergence
 
     private Population<ConcreteAgent> pop;
 
+    /* Each Blackjack game needs its own seed, but could be on its own thread.
+    * 'Random' class is not synchronized, so protect it via synchronized method. */
+    private synchronized long iterateSeed() { return generator.nextLong(); }
+
     @BeforeEach public void setup()
     {
         pop = new Population<>(NUM_AGENTS, generator, crosser, mutator, MUTATION_RATE)
         {
             @Override public double evaluateFitness(final ConcreteAgent agent)
             {
-                final Blackjack bj = new BlackjackSolo(BJ_SHOE_SIZE, SEED, BJ_SHOE_PEN);
+                // Each Blackjack game needs a new seed, otherwise all agents will play the exact same hands & games
+                final Blackjack bj = new Blackjack(BJ_SHOE_SIZE, iterateSeed(), BJ_SHOE_PEN);
                 bj.dealIn(agent);
                 final Map<Player, Integer> m = bj.getResults();
                 double cost = 0.0;
@@ -72,7 +77,7 @@ public class TestConvergence
 
             @Override public ConcreteAgent initAgent()
             {
-                final ConcreteAgent ca = new ConcreteAgent(SEED);
+                final ConcreteAgent ca = new ConcreteAgent(generator.nextLong()); // Each agent needs its own seed
                 ca.randomizeWeights();
                 return ca;
             }

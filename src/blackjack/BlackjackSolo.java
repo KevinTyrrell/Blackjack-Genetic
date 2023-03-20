@@ -32,6 +32,19 @@ public class BlackjackSolo extends Blackjack
     private final Map<Player, Integer> player = new MutableSingletonMap<>();
 
     /**
+     * Constructs a Blackjack table instance
+     *
+     * @param shoeSize    Number of decks to be combined into a shoe
+     * @param seed        Random seed sequence
+     * @param penetration Percentage [0.0,1.0] of how many cards of the shoe have
+     *                    been dealt out before a shuffle should take place.
+     */
+    public BlackjackSolo(int shoeSize, long seed, float penetration)
+    {
+        super(shoeSize, seed, penetration);
+    }
+
+    /**
      * Deal in all players at the table, ensuring they are dealt cards each round
      *
      * @param players Players to deal in at the table

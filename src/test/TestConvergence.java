@@ -19,7 +19,6 @@
 package test;
 
 import blackjack.Blackjack;
-import blackjack.BlackjackSolo;
 import blackjack.player.Player;
 import genetic.Population;
 import genetic.Simulation;
@@ -64,7 +63,10 @@ public class TestConvergence
                 final Map<Player, Integer> m = bj.getResults();
                 double cost = 0.0;
                 for (int i = 0; i < BJ_ROUNDS_PER_AGENT; i++)
+                {
+                    bj.playRound();
                     cost += m.get(agent);
+                }
                 return cost;
             }
 
@@ -89,7 +91,5 @@ public class TestConvergence
             }
         };
         sim.run(pop, GENERATION_TARGET, generator, gradient, false);
-
-
     }
 }

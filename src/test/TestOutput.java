@@ -18,8 +18,13 @@
 
 package test;
 
+import blackjack.BJEventTranslator;
+import blackjack.Blackjack;
+import blackjack.player.Player;
+import blackjack.player.UserPlayer;
 import genetic.agent.ConcreteAgent;
 import io.AgentWeightFormatter;
+import io.BlackjackConsoleView;
 import org.junit.jupiter.api.Test;
 
 
@@ -36,5 +41,10 @@ public final class TestOutput
             System.out.println(s[i]);
             System.out.printf("%s\n\n", s[i + 1]);
         }
+
+        final Blackjack bj = new BJEventTranslator(new BlackjackConsoleView(), 8, 42141451, 0.35f);
+        final Player user = new UserPlayer();
+        bj.dealIn(user, ca);
+        bj.playRound();
     }
 }

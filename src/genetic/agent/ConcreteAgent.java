@@ -30,7 +30,8 @@ import java.util.Random;
 public class ConcreteAgent extends Player implements Agent<ConcreteAgent>, Serializable
 {
     private final Random generator;
-    private final int[] weights = new int[2 * 19]; // Two dimensions represented as a single dimensional array
+    // Structure: [weights from score, no aces][17][weights from score, at least one ace][19]
+    private final int[] weights = new int[17 + 19];
 
     /**
      * @param generator Random seed sequence
@@ -50,17 +51,12 @@ public class ConcreteAgent extends Player implements Agent<ConcreteAgent>, Seria
      */
     @Override public boolean hit()
     {
-        final int x = hasAce() ? 1 : 2;
-        /* A score of 0 or 1 in Blackjack is impossible.
-        Therefore we remove two weights that would otherwise be wasted. */
-        final int y = getHardScore() - 2;
-        /*
-         * Dimension 1: Ace [0,1], a player having an ace in their hand can drastically change their disposition.
-         * Dimension 2: Score [0,18] Valid scores to hit/stand are between 2 and 20, for a total of 19 possible scores.
-         *
-         * Flatten the two dimensions into one dimension
-         */
-        return weights[(x * y)] > generator.nextInt(Integer.MAX_VALUE);
+        // Equation via 'Multiple Linear Regression' calculator
+        final int index = -4 + 19 * (hasAce() ? 1: 0) + getHardScore();
+        /* If the agent doesn't have an ace, then only scores [4, 20] are possible.
+        If the agent has at least one ace, then scores [2, 20] are possible.
+        Therefore there are 17 + 19 => 36 possible cases (indexes) to map. */
+        return weights[index] > generator.nextInt(Integer.MAX_VALUE);
     }
 
     /**

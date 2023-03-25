@@ -1,6 +1,6 @@
 /*
- *     Genetic algorithm which teaches agents how to play Blackjack.
- *     Copyright (C) 2019-2023  Kevin Tyrrell
+ *     <one line to give the program's name and a brief idea of what it does.>
+ *     Copyright (C) 2023  Kevin Tyrrell
  *
  *     This program is free software: you can redistribute it and/or modify
  *     it under the terms of the GNU General Public License as published by
@@ -18,50 +18,43 @@
 
 package test;
 
+import blackjack.BJEventTranslator;
 import blackjack.Blackjack;
 import blackjack.player.Player;
+import blackjack.player.UserPlayer;
 import genetic.population.Population;
 import genetic.Simulation;
 import genetic.agent.ConcreteAgent;
-import genetic.gene.Crossover;
-import genetic.gene.Mutation;
 import genetic.gradient.BirdshotGradient;
 import genetic.gradient.Gradient;
-import genetic.population.Repopulator;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import io.AgentWeightFormatter;
+import io.BlackjackConsoleView;
 
-import java.util.Arrays;
 import java.util.DoubleSummaryStatistics;
 import java.util.Map;
 import java.util.Random;
 
 
-public class TestConvergence
+public class TrainAndPlay
 {
     private static final long SEED = 5213821584128L;
-    private static final int GENERATION_TARGET = 10, NUM_AGENTS = 1000;
-    private static final float MUTATION_RATE = 0.15f, GRADIENT_SCALAR = 15;
+    private static final int GENERATION_TARGET = 30, NUM_AGENTS = 1000;
+    private static final float GRADIENT_SCALAR = 15;
 
     private static final int BJ_SHOE_SIZE = 8, BJ_ROUNDS_PER_AGENT = 100000;
     private static final float BJ_SHOE_PEN = 0.35f;
 
     private static final Random generator = new Random(SEED);
-    private static final Repopulator repopulator = Repopulator.TWO_PASS_FISCHER_YATES;
-    private static final Crossover crosser = Crossover.UNIFORM;
-    private static final Mutation mutator = Mutation.UNIFORM;
     private static final Gradient<ConcreteAgent> gradient =
             new BirdshotGradient<>(generator, GRADIENT_SCALAR);
 
-    private Population<ConcreteAgent> pop;
-
     /* Each Blackjack game needs its own seed, but could be on its own thread.
-    * 'Random' class is not synchronized, so protect it via synchronized method. */
-    private synchronized long iterateSeed() { return generator.nextLong(); }
+     * 'Random' class is not synchronized, so protect it via synchronized method. */
+    private static synchronized long iterateSeed() {return generator.nextLong();}
 
-    @BeforeEach public void setup()
+    public static void main(final String[] args)
     {
-        pop = new Population<>(NUM_AGENTS, generator, repopulator, crosser, mutator, MUTATION_RATE)
+        final Population<ConcreteAgent> pop = new Population<>(NUM_AGENTS, generator)
         {
             @Override public double evaluateFitness(final ConcreteAgent agent)
             {
@@ -85,10 +78,7 @@ public class TestConvergence
                 return ca;
             }
         };
-    }
 
-    @Test public void convergence()
-    {
         final Simulation<ConcreteAgent> sim = new Simulation<>()
         {
             @Override public void genCostStatsCallback(DoubleSummaryStatistics dss, int generation)
@@ -99,6 +89,42 @@ public class TestConvergence
             }
         };
         sim.run(pop, GENERATION_TARGET, generator, gradient, true);
-        System.out.println(Arrays.toString(pop.geneEvaluation()));
+
+        for (int i = 0; i < NUM_AGENTS; i++) pop.evaluateFitness(i);
+        pop.sortPopulation();
+        final ConcreteAgent apex = pop.getPopulation().get(0);
+
+        final String[] rows = AgentWeightFormatter.formatWeightMatrix(apex);
+        for (int i = 0; i < rows.length; i += 2)
+        {
+            System.out.println(rows[i]);
+            System.out.printf("%s\n\n", rows[i + 1]);
+        }
+        System.out.println();
+
+        int wins = 0; int losses = 0; int draws = 0;
+        Blackjack bj = new Blackjack(BJ_SHOE_SIZE, SEED, BJ_SHOE_PEN);
+        bj.dealIn(apex);
+        final Map<Player, Integer> results = bj.getResults();
+        for (int i = 0; i < BJ_ROUNDS_PER_AGENT; i++)
+        {
+            bj.playRound();
+            switch (results.get(apex))
+            {
+                case 0: draws ++; break;
+                case 1: wins++; break;
+                default: losses++; break;
+            }
+        }
+        bj.reset();
+        final String f = "Win: %-3.2f%%   Loss: %-3.2f%%   Draw: %-3.2f%%\n";
+        System.out.printf(f, 100*(double)wins/BJ_ROUNDS_PER_AGENT, 100*(double)losses/BJ_ROUNDS_PER_AGENT,
+                100*(double)draws/BJ_ROUNDS_PER_AGENT);
+
+
+        bj = new BJEventTranslator(new BlackjackConsoleView(), BJ_SHOE_SIZE, SEED, BJ_SHOE_PEN);
+        bj.dealIn(new UserPlayer(), apex);
+        while (System.currentTimeMillis() > 0)
+            bj.playRound();
     }
 }

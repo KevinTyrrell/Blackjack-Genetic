@@ -22,7 +22,6 @@ import blackjack.card.Card;
 import blackjack.card.Shoe;
 import blackjack.player.Dealer;
 import blackjack.player.Player;
-import util.Utilities;
 
 import java.util.*;
 import java.util.function.Function;

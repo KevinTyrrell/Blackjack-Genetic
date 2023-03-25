@@ -37,7 +37,7 @@ public class UserPlayer extends Player
         {
             System.out.printf(FMT_HIT_PROMPT, this);
 
-            if (input.hasNextLine())
+            if (input.hasNext())
             {
                 final String t = input.nextLine().trim().toLowerCase();
                 final Boolean decision = keywords.get(t);

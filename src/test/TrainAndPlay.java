@@ -38,7 +38,7 @@ import java.util.Random;
 public class TrainAndPlay
 {
     private static final long SEED = 5213821584128L;
-    private static final int GENERATION_TARGET = 30, NUM_AGENTS = 1000;
+    private static final int GENERATION_TARGET = 1, NUM_AGENTS = 1000;
     private static final float GRADIENT_SCALAR = 15;
 
     private static final int BJ_SHOE_SIZE = 8, BJ_ROUNDS_PER_AGENT = 100000;
